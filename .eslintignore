@@ -1,0 +1,9 @@
+**/node_modules/**
+dist
+tsconfig.json
+public/manifest.json
+package.json
+.eslintrc.js
+vite.config.ts
+tsconfig.node.json
+vite-env.d.ts

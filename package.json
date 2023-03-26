@@ -1,0 +1,46 @@
+{
+  "name": "credit-carbone",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.17",
+    "@chakra-ui/react": "^2.5.3",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
+    "@tanstack/react-query": "^4.28.0",
+    "@types/node": "^18.15.7",
+    "@walletconnect/client": "^1.8.0",
+    "@web3auth/base": "^5.1.0",
+    "@web3auth/modal": "^5.1.0",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "buffer": "^6.0.3",
+    "eslint": "^8.36.0",
+    "ethers": "^6.2.2",
+    "framer-motion": "^10.9.1",
+    "lodash": "^4.17.21",
+    "process": "^0.11.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.9.0",
+    "react-social-icons": "^5.15.0",
+    "react-toastify": "^9.1.2",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-polyfills": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "prettier": "2.8.7",
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0"
+  }
+}

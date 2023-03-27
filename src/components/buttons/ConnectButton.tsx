@@ -16,8 +16,11 @@ export const ConnectButton: FC = () => {
   const { login, logout, getUserInfo, address } = useWeb3Auth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleLogout = useCallback(() => {
-    logout();
+  const handleLogout = useCallback(async () => {
+    await logout();
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("walletAddress");
+    localStorage.removeItem("role");
   }, [logout]);
   
   return (

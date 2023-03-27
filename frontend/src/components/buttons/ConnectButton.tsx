@@ -9,8 +9,6 @@ import { FC, useCallback, useMemo } from 'react';
 import { useWeb3Auth } from '../../hooks/useWeb3Auth';
 import { trimString } from '../../utils/trimString';
 import { ChoiceModal } from '../modals/ChoiceModal';
-
-import { useCreateNewUser } from '../../api/user';
   
 export const ConnectButton: FC = () => {
   const { login, logout, getUserInfo, address } = useWeb3Auth();

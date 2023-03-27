@@ -33,9 +33,12 @@ export const ChoiceModal: FC<ChoiceModalProps> = ({ isOpen, onClose }) => {
   const handleRegister = useCallback(async () => {
     await login();
     const userInfo = await getUserInfo();
-    console.log('role : ', role)
 
+    console.log(userInfo.email)
+    console.log(address)
+    console.log(role)
     if(userInfo.email && address && role) {
+      console.log('Condition OK !')
       localStorage.setItem("userEmail", userInfo.email);
       localStorage.setItem("walletAddress", address);
     
@@ -46,7 +49,7 @@ export const ChoiceModal: FC<ChoiceModalProps> = ({ isOpen, onClose }) => {
         onSuccess: handleSuccess
       })
     }
-  }, [getUserInfo]);
+  }, [role, address, getUserInfo]);
 
   const handleLogin = useCallback(async () => {
     await login();

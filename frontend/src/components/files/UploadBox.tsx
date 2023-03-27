@@ -1,11 +1,64 @@
 import { AspectRatio, Box, Button, ButtonGroup, Center, Container, Heading, Input, Stack, Text } from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
-import { FC } from "react";
+import { FC, useCallback, useState } from "react";
+import { useUpload, useUploadToIPFS } from "../../api/file";
+
+import * as XLSX from 'xlsx/xlsx.mjs';
+import { useWeb3Auth } from "../../hooks/useWeb3Auth";
 
 export const UploadBox: FC = () => {
     const controls = useAnimation();
     const startAnimation = () => controls.start("hover");
     const stopAnimation = () => controls.stop();
+
+    const [jsonData, setJsonData] = useState<string[] | undefined>();
+    const [ipfsLoading, setIpfsLoading] = useState<any>(false);
+    const { uploadToIPFS } = useUploadToIPFS();
+    const { upload } = useUpload();
+    const { getUserInfo } = useWeb3Auth();
+
+    const uploadToIPFSSuccess = (callbackData: string[]) => {
+        console.log(callbackData);
+    };
+
+    const uploadToIPFSError = () => {};
+
+    const handleUpload = useCallback(async () => {
+        if(jsonData) {
+            setIpfsLoading(true);
+            /*uploadToIPFS({
+                jsonData: jsonData,
+                onSuccess: uploadToIPFSSuccess,
+                onError: uploadToIPFSError,
+            });*/
+            setIpfsLoading(false);
+
+            const userInfo = await getUserInfo();
+            upload({
+                jsonData: jsonData,
+                type: 'UCO',
+                email: userInfo.email,
+            })
+
+        }
+    }, [jsonData]);
+
+    const handleXLSXFile = useCallback(async (event: any) => {
+        event.preventDefault();
+        if(event.target.files) {
+            const reader = new FileReader();
+            reader.onload = (event?: any) => {
+                const data = event.target.result;
+                const workbook = XLSX.read(data, { type: "array" })
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet);
+                setJsonData(json);
+                console.log(json)
+            }
+            reader.readAsArrayBuffer(event.target.files[0]);
+        }
+    }, [jsonData]);
 
     return (
       <div>
@@ -63,15 +116,15 @@ export const UploadBox: FC = () => {
                         left="0"
                         opacity="0"
                         aria-hidden="true"
-                        accept="image/*"
                         onDragEnter={startAnimation}
                         onDragLeave={stopAnimation}
+                        onChange={(e) => handleXLSXFile(e)}
                     />
                     </Box>
                 </Box>
             </AspectRatio>
             <ButtonGroup gap='1' pt={4}>
-                <Button colorScheme='green'>Upload</Button>
+                <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
                 <Button colorScheme='orange'>Mint</Button>
                 <Button colorScheme='twitter'>My UCO</Button>
             </ButtonGroup>

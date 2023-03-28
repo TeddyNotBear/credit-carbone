@@ -1,19 +1,34 @@
-import { StarIcon } from "@chakra-ui/icons";
-import { Badge, Box, Grid, Image, SimpleGrid, Spacer } from "@chakra-ui/react";
-import { FC } from "react";
+import { CheckIcon, StarIcon } from "@chakra-ui/icons";
+import { Badge, Box, Button, Flex, Grid, Image, Input, InputGroup, InputLeftElement, InputRightElement, SimpleGrid, Spacer, Stack } from "@chakra-ui/react";
+import { FC, useState } from "react";
 import { ISCC } from "../../types/SCC";
 
 import { SCCLogo } from "../../assets";
 import { useGetSCCByEmail } from "../../api/file";
+import { ethers } from "ethers";
 
 export const SccBox: FC = () => {
   const { sccsData, isLoading, isError } = useGetSCCByEmail();
+  const [amount, setAmount] = useState<string>('');
+
+  const handleAmount = (e: any) => {
+    setAmount(e.target.value);
+  }
+
+  const sellItem = async (amount: string, idx: number) => {
+    try {
+      console.log(idx);
+      console.log(ethers.parseEther(amount));
+    } catch (error: any) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
       <Grid templateColumns='repeat(3, 1fr)' gap={6}>
         {
-          sccsData && sccsData.map((sccData: ISCC) => {
+          sccsData && sccsData.map((sccData: ISCC, idx: any) => {
             return (
               <Box maxW='sm' key={sccData.id_scc} borderWidth='1px' borderRadius='lg' overflow='hidden'>
                 <Image src={SCCLogo} alt={SCCLogo} />
@@ -50,6 +65,13 @@ export const SccBox: FC = () => {
                       linked to uco n°{sccData.scc_uco_id}
                     </Box>
                 </Box>
+                <Flex p='6'>
+                  <InputGroup pr={2} >
+                    <InputLeftElement pointerEvents='none' color='gray.300' fontSize='1.2em' children='$' />
+                    <Input onChange={(e: any) => handleAmount(e)} placeholder='Enter amount' />
+                  </InputGroup>
+                  <Button onClick={() => sellItem(amount, idx)} colorScheme='orange'>Sell</Button>
+                </Flex>
               </Box>
             );
           })

@@ -58,7 +58,6 @@ export class FileController {
             }
         });
 
-        console.log(isValid)
         return isValid;
     }
 

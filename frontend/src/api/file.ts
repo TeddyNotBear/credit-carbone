@@ -43,6 +43,20 @@ export const useGetUCOByEmail = () => {
     return { ...query, ucosData: query.data };
 };
 
+export const useGetSCCByEmail = () => {
+    const query = useQuery<any, Error>({
+      queryKey: [URI],
+      queryFn: async (): Promise<any> => {
+        return fetchApi({
+          uri: `${URI}/scc/user/${localStorage.getItem('userEmail')}`,
+          method: methods.GET,
+        });
+      },
+      enabled: localStorage.getItem('userEmail') !== ''
+    });
+    return { ...query, sccsData: query.data };
+};
+
 export const useUploadToIPFS = () => {
     const queryClient = useQueryClient();
 

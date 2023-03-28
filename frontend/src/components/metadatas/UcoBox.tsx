@@ -6,7 +6,7 @@ import { IUCO } from "../../types/UCO";
 import { UCOLogo } from "../../assets";
 import { useGetUCOByEmail } from "../../api/file";
 
-export const MetadatasBox: FC = () => {
+export const UcoBox: FC = () => {
   const { ucosData, isLoading, isError } = useGetUCOByEmail();
 
   return (

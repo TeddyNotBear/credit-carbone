@@ -1,7 +1,7 @@
 import { Container, Flex, Spacer } from "@chakra-ui/react";
 import { FC, useCallback, useState } from "react";
 import { UploadBox } from "../components/files/UploadBox";
-import { MetadatasBox } from "../components/metadatas/MetadatasBox";
+import { UcoBox } from "../components/metadatas/UcoBox";
 import { useWeb3Auth } from "../hooks/useWeb3Auth";
 
 const UcoView: FC = () => {
@@ -10,7 +10,7 @@ const UcoView: FC = () => {
         <Flex px={16}>
             <UploadBox type={'UCO'} />
             <Spacer />
-            <MetadatasBox />
+            <UcoBox />
         </Flex>
     );
 }

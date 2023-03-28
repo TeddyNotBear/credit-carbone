@@ -41,16 +41,13 @@ export class FileController {
     public async ownershipVerification(userUCOs: any, jsonData: Array<any>): Promise<boolean> {
         let sccUcoIdArr: Array<string> = [];
         jsonData.forEach((scc: ISCC) => sccUcoIdArr.push(scc.scc_uco_id));
-        console.log('sccUcoIdArr', sccUcoIdArr);
 
         let uniquenessDataId = sccUcoIdArr.filter((sccUcoId: string, index: any) => {
             return sccUcoIdArr.indexOf(sccUcoId) === index;
         });
-        console.log('uniquenessDataId', uniquenessDataId);
 
         let idUcoOwnedByUserArr: Array<string> = [];
-        userUCOs.data.forEach((uco: IUCO) => idUcoOwnedByUserArr.push(uco.id_uco));
-        console.log('idUcoOwnedByUserArr', idUcoOwnedByUserArr);
+        userUCOs.forEach((uco: IUCO) => idUcoOwnedByUserArr.push(uco.id_uco));
 
         let isValid: boolean = true;
         uniquenessDataId.forEach((data: any) => {

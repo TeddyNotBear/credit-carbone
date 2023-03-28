@@ -9,7 +9,7 @@ import {
     ModalCloseButton
 } from '@chakra-ui/react';
 import { FC, useCallback, useState } from 'react';
-import { useUpload, useUploadToIPFS } from '../../api/file';
+import { useUpload, useUploadToIPFS, useVerif } from '../../api/file';
 import { useWeb3Auth } from '../../hooks/useWeb3Auth';
     
 interface SccModalProps {
@@ -19,10 +19,12 @@ interface SccModalProps {
 }
     
 export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
-    const [ipfsLoading, setIpfsLoading] = useState<any>(false);
+    const [ipfsLoading, setIpfsLoading] = useState<boolean>(false);
+    const [isVerif, setIfVerif] = useState<boolean>();
     const { uploadToIPFS } = useUploadToIPFS();
     const { upload } = useUpload();
     const { userInfo } = useWeb3Auth();
+    const { verif } = useVerif();
 
     const uploadToIPFSSuccess = (callbackData: any) => {
         console.log(callbackData.message);
@@ -30,8 +32,27 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
 
     const uploadToIPFSError = () => {};
 
+    const verifSuccess = (callbackData: any) => {
+        console.log(callbackData.message);
+        setIfVerif(callbackData.message);
+    };
+
+    const verifError = () => {};
+
+    const handleVerif = useCallback(async () => {
+        if(jsonData) {
+            verif({
+                jsonData: jsonData,
+                email: userInfo.email,
+                onSuccess: verifSuccess,
+                onError: verifError,
+            })
+        }
+    }, [jsonData, userInfo]);
+
     const handleUpload = useCallback(async () => {
         if(jsonData) {
+            console.log("VERIFIED")
             setIpfsLoading(true);
             uploadToIPFS({
                 jsonData: jsonData,
@@ -40,11 +61,11 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
             });
             setIpfsLoading(false);
 
-            upload({
+            /*upload({
                 jsonData: jsonData,
                 type: 'SCC',
                 email: userInfo.email,
-            })
+            })*/
         }
     }, [jsonData, userInfo]);
 
@@ -63,7 +84,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
                         Close
                     </Button>
                     <Button colorScheme='green' onClick={async () => {
-                        handleUpload();
+                        handleVerif();
                         onClose();
                     }}>Accept</Button>
                 </ModalFooter>

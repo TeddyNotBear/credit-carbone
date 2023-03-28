@@ -15,6 +15,13 @@ export interface uploadArgs {
     onError?: (error: Error) => void;
 }
 
+export interface verifArgs {
+    jsonData: Array<string>;
+    email: string;
+    onSuccess?: (successCallbackData: any) => void;
+    onError?: (error: Error) => void;
+}
+
 export interface GetUCOByEmailArgs {
     onSuccess?: (successCallbackData: any) => void;
     onError?: (error: Error) => void;
@@ -94,4 +101,34 @@ export const useUpload = () => {
     });
 
     return { ...mutation, upload: mutation.mutate };
+};
+
+export const useVerif = () => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation<
+        { message: string; mutationResult: any },
+        Error,
+        verifArgs
+    >({
+       mutationFn: async ({ jsonData, email }: verifArgs): Promise<{ message: string; mutationResult: any }> =>
+        fetchApi({
+            uri: `${URI}/verif`,
+            method: methods.POST,
+            body: { jsonData, email }
+        }),
+        onSuccess: (data, { onSuccess }) => {
+            queryClient.invalidateQueries([URI]);
+            if (onSuccess) {
+                onSuccess(data);
+            }
+        },
+        onError: (error, { onError }) => {
+            if (onError) {
+                onError(error);
+            }
+        },
+    });
+
+    return { ...mutation, verif: mutation.mutate };
 };

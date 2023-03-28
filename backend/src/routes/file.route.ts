@@ -57,10 +57,10 @@ router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
 router.post('/verif', async (req, res: express.Response) => {
     try {
         const jsonData = req.body.jsonData;
-        const userEmail = req.body.userEmail;
+        const email = req.body.email;
         if(jsonData) {
             const fileController = new FileController();
-            const userUCOs = await fileController.getUserUCO(userEmail);
+            const userUCOs = await fileController.getUserUCO(email);
             const isValid: boolean = await fileController.ownershipVerification(userUCOs, jsonData);
 
             return res.status(200).send({ message: isValid });

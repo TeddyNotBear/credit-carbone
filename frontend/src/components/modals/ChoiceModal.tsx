@@ -33,7 +33,7 @@ export const ChoiceModal: FC<ChoiceModalProps> = ({ isOpen, onClose }) => {
   const handleRegister = useCallback(async () => {
     await login();
     const userInfo = await getUserInfo();
-
+    
     console.log(userInfo.email)
     console.log(address)
     console.log(role)

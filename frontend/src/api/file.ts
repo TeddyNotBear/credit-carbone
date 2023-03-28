@@ -15,7 +15,26 @@ export interface uploadArgs {
     onError?: (error: Error) => void;
 }
 
+export interface GetUCOByEmailArgs {
+    onSuccess?: (successCallbackData: any) => void;
+    onError?: (error: Error) => void;
+}
+
 const URI = '/api/file';
+
+export const useGetUCOByEmail = () => {
+    const query = useQuery<any, Error>({
+      queryKey: [URI],
+      queryFn: async (): Promise<any> => {
+        return fetchApi({
+          uri: `${URI}/uco/user/${localStorage.getItem('userEmail')}`,
+          method: methods.GET,
+        });
+      },
+      enabled: localStorage.getItem('userEmail') !== ''
+    });
+    return { ...query, ucosData: query.data };
+};
 
 export const useUploadToIPFS = () => {
     const queryClient = useQueryClient();

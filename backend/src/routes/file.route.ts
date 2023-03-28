@@ -33,13 +33,13 @@ router.post('/upload', async (req: any, res: express.Response) => {
     }
 });
 
-/*router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
+router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
     try {
         const jsonData = req.body.jsonData;
         console.log(jsonData);
         if(jsonData) {
             const fileController = new FileController();
-            fileController.uploadToIPFS(jsonData);
+            // fileController.uploadToIPFS(jsonData);
         }
         if (jsonData == undefined) {
             return res.status(400).send({ message: "Please upload a file!" });
@@ -53,7 +53,7 @@ router.post('/upload', async (req: any, res: express.Response) => {
             message: `Could not upload the files to IPFS`,
         });
     }
-});*/
+});
 
 router.get('/uco/user/:userEmail', async (req, res: express.Response) => {
     const userEmail = req.params['userEmail'];

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApi, methods } from "./fetchApi";
 
-export interface MutationArgs {
+export interface CreateNewUserArgs {
     email: string;
     wallet_address: string;
     role: string;
@@ -17,9 +17,9 @@ export const useCreateNewUser = () => {
     const mutation = useMutation<
         { message: string; mutationResult: any },
         Error,
-        MutationArgs
+        CreateNewUserArgs
     >({
-       mutationFn: async ({ email, wallet_address, role }: MutationArgs): Promise<{ message: string; mutationResult: any }> =>
+       mutationFn: async ({ email, wallet_address, role }: CreateNewUserArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
             uri: `${URI}/`,
             method: methods.POST,

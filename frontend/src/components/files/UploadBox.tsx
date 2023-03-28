@@ -1,10 +1,11 @@
 import { AspectRatio, Box, Button, ButtonGroup, Center, Container, Heading, Input, Stack, Text } from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useUpload, useUploadToIPFS } from "../../api/file";
 
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { useWeb3Auth } from "../../hooks/useWeb3Auth";
+import { useGetUCOByEmail } from "../../api/file";
 
 export const UploadBox: FC = () => {
     const controls = useAnimation();
@@ -13,6 +14,7 @@ export const UploadBox: FC = () => {
 
     const [jsonData, setJsonData] = useState<string[] | undefined>();
     const [ipfsLoading, setIpfsLoading] = useState<any>(false);
+    const [userEmail, setUserEmail] = useState<string>("");
     const { uploadToIPFS } = useUploadToIPFS();
     const { upload } = useUpload();
     const { getUserInfo } = useWeb3Auth();
@@ -26,11 +28,11 @@ export const UploadBox: FC = () => {
     const handleUpload = useCallback(async () => {
         if(jsonData) {
             setIpfsLoading(true);
-            /*uploadToIPFS({
+            uploadToIPFS({
                 jsonData: jsonData,
                 onSuccess: uploadToIPFSSuccess,
                 onError: uploadToIPFSError,
-            });*/
+            });
             setIpfsLoading(false);
 
             const userInfo = await getUserInfo();
@@ -41,7 +43,7 @@ export const UploadBox: FC = () => {
             })
 
         }
-    }, [jsonData]);
+    }, [jsonData, getUserInfo]);
 
     const handleXLSXFile = useCallback(async (event: any) => {
         event.preventDefault();
@@ -126,7 +128,6 @@ export const UploadBox: FC = () => {
             <ButtonGroup gap='1' pt={4}>
                 <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
                 <Button colorScheme='orange'>Mint</Button>
-                <Button colorScheme='twitter'>My UCO</Button>
             </ButtonGroup>
       </div>
     );

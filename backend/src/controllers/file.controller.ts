@@ -1,7 +1,7 @@
 import { UCO, IUCO } from './../models/uco.model';
 import { SCC, ISCC } from './../models/scc.model';
 
-// import * as IPFS from 'ipfs-core';
+// import * as IPFS from 'ipfs-core'
 
 export class FileController {
 
@@ -38,7 +38,7 @@ export class FileController {
         return SCC.find(filter);
     }
 
-    /*public async uploadToIPFS(jsonData: Array<string>) {
+    /* public async uploadToIPFS(jsonData: Array<string>) {
         const node = await IPFS.create({ repo: "Credit Carbone" + Math.random() });
         let ipfsHashArr: Array<string> = [];
         if(jsonData && jsonData.length > 0) {
@@ -50,6 +50,6 @@ export class FileController {
             }
         }
         return ipfsHashArr;
-    }*/
+    } */
 
 }

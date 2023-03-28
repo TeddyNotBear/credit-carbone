@@ -21,7 +21,7 @@ export interface ISCC extends Document {
     uco_primary_crop?: string | undefined,	
     uco_project_type?: string | undefined,	
     uco_project_developer?: string | undefined,	
-    scc_uco_id: string | undefined,	
+    scc_uco_id: string,	
     uco_wallet_id?: string | undefined,
     uploadedBy: string,
 }
@@ -47,7 +47,7 @@ const sccSchema = new Schema({
     uco_primary_crop: { type: String },	
     uco_project_type: { type: String },	
     uco_project_developer: { type: String },	
-    scc_uco_id: { type: String },	
+    scc_uco_id: { type: String, required: true  },	
     uco_wallet_id: { type: String },
     uploadedBy: { type: String, ref: 'User' },
 });

@@ -38,6 +38,33 @@ export class FileController {
         return SCC.find(filter);
     }
 
+    public async ownershipVerification(userUCOs: any, jsonData: Array<any>): Promise<boolean> {
+        let sccUcoIdArr: Array<string> = [];
+        jsonData.forEach((scc: ISCC) => sccUcoIdArr.push(scc.scc_uco_id));
+        console.log('sccUcoIdArr', sccUcoIdArr);
+
+        let uniquenessDataId = sccUcoIdArr.filter((sccUcoId: string, index: any) => {
+            return sccUcoIdArr.indexOf(sccUcoId) === index;
+        });
+        console.log('uniquenessDataId', uniquenessDataId);
+
+        let idUcoOwnedByUserArr: Array<string> = [];
+        userUCOs.data.forEach((uco: IUCO) => idUcoOwnedByUserArr.push(uco.id_uco));
+        console.log('idUcoOwnedByUserArr', idUcoOwnedByUserArr);
+
+        let isValid: boolean = true;
+        uniquenessDataId.forEach((data: any) => {
+            // Possibilité de récupérer les UCO exacts que l'utilisateur ne possède pas
+            if( idUcoOwnedByUserArr.indexOf(data) < 0 ) {
+                isValid = false;
+                return isValid;
+            }
+        });
+
+        console.log(isValid)
+        return isValid;
+    }
+
     /*public async uploadToIPFS(jsonData: Array<string>) {
         const node = await create({ repo: "Credit Carbone" + Math.random() });
         let ipfsHashArr: Array<string> = [];

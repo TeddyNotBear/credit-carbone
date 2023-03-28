@@ -1,4 +1,4 @@
-import { AspectRatio, Box, Button, ButtonGroup, Center, Container, Heading, Input, Stack, Text } from "@chakra-ui/react";
+import { AspectRatio, Box, Button, ButtonGroup, Center, Container, Heading, Input, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useUpload, useUploadToIPFS } from "../../api/file";
@@ -6,12 +6,13 @@ import { useUpload, useUploadToIPFS } from "../../api/file";
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { useWeb3Auth } from "../../hooks/useWeb3Auth";
 import { useGetUCOByEmail } from "../../api/file";
+import { SccModal } from "../modals/SccModal";
 
 export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const controls = useAnimation();
     const startAnimation = () => controls.start("hover");
     const stopAnimation = () => controls.stop();
-
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const [jsonData, setJsonData] = useState<string[] | undefined>();
     const [isSuccess, setSuccess] = useState<boolean>(false);
     const [callbackMessage, setCallbackMessage] = useState<string>();
@@ -38,20 +39,11 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
             });
             setIpfsLoading(false);
 
-            if(type === 'UCO') {
-                upload({
-                    jsonData: jsonData,
-                    type: 'UCO',
-                    email: userInfo.email,
-                })
-            }
-            if(type === 'SCC') {
-                upload({
-                    jsonData: jsonData,
-                    type: 'SCC',
-                    email: userInfo.email,
-                })
-            }
+            upload({
+                jsonData: jsonData,
+                type: 'UCO',
+                email: userInfo.email,
+            })
         }
     }, [jsonData, userInfo]);
 
@@ -137,9 +129,14 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
             </AspectRatio>
             { isSuccess && <Text color="green">{ callbackMessage }</Text> }
             <ButtonGroup gap='1' pt={4}>
-                <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
+                {
+                    type && type === 'UCO'
+                    ? <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
+                    : <Button onClick={onOpen} colorScheme='green'>Upload</Button>
+                }
                 <Button colorScheme='orange'>Mint</Button>
             </ButtonGroup>
+            <SccModal jsonData={jsonData} isOpen={isOpen} onClose={onClose} />
       </div>
     );
 }

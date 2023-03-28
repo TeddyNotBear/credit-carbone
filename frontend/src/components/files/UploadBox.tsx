@@ -105,7 +105,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                         </Box>
                         <Stack p="8" textAlign="center" spacing="1">
                             <Heading fontSize="lg" color="gray.700" fontWeight="bold">
-                            Drop images here
+                            Drop files here
                             </Heading>
                             <Text fontWeight="light">or click to upload</Text>
                         </Stack>

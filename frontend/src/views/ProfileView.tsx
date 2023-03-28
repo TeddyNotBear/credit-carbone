@@ -6,6 +6,8 @@ import {
     Text,
     useColorModeValue,
     Button,
+    Badge,
+    Stack,
 } from '@chakra-ui/react';
 import { FC, useCallback, useState } from "react";
 import { BlankAvatarLogo } from '../assets';
@@ -42,7 +44,10 @@ const ProfileView: FC = () => {
                 <Text fontWeight={600} color={'gray.500'} mb={4}>
                     { address && trimString(address, 12) }
                 </Text>
-                <Button colorScheme='red' onClick={handlePrivateKey}>Export your private key</Button>
+                <Text textAlign={'center'} color={useColorModeValue('gray.700', 'gray.400')} py={3} mb={4}>
+                    { localStorage.getItem('role') && localStorage.getItem('role') }
+                </Text>
+                <Button colorScheme='orange' onClick={handlePrivateKey}>Export your private key</Button>
                 { privateKey && <Text>{ privateKey }</Text>}
             </Box>
         </Center>

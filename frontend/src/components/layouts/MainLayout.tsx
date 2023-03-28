@@ -1,4 +1,4 @@
-import { Box, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, useColorModeValue, Image, Grid, Spacer, Text, Heading } from '@chakra-ui/react';
 import { FC, ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 

@@ -8,7 +8,7 @@ const UcoView: FC = () => {
 
     return (
         <Flex px={16}>
-            <UploadBox />
+            <UploadBox type={'UCO'} />
             <Spacer />
             <MetadatasBox />
         </Flex>

@@ -11,7 +11,7 @@ import { trimString } from '../../utils/trimString';
 import { ChoiceModal } from '../modals/ChoiceModal';
   
 export const ConnectButton: FC = () => {
-  const { login, logout, getUserInfo, address } = useWeb3Auth();
+  const { login, logout, address } = useWeb3Auth();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleLogout = useCallback(async () => {

@@ -22,10 +22,12 @@ interface Web3Config {
   provider: SafeEventEmitterProvider | null;
   network: Network;
   address: string | null;
+  userInfo: any;
   chainId: number | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
   getUserInfo: () => Promise<any>; // To be defined
+  getAccounts: () => Promise<string>;
   switchNetwork: (network: Network) => Promise<void>;
   sendTransaction: () => Promise<unknown | undefined>;
   signMessage: () => Promise<string | undefined>;
@@ -37,10 +39,12 @@ export const Web3Context = createContext<Web3Config>({
   provider: null,
   web3auth: null,
   address: null,
+  userInfo: null,
   chainId: null,
   login: async () => {},
   logout: async () => {},
   getUserInfo: async () => {},
+  getAccounts: async () => 'hello',
   switchNetwork: async () => {},
   sendTransaction: async () => [],
   signMessage: async () => 'hello',
@@ -53,6 +57,7 @@ export const Web3Provider: FC<{ children: any }> = ({ children }) => {
   const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null,);
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
+  const [userInfo, setUserInfo] = useState<any>();
 
   useEffect(() => {
     const init = async () => {
@@ -165,10 +170,13 @@ export const Web3Provider: FC<{ children: any }> = ({ children }) => {
 
       const chainIdResult = await getChainId();
       setChainId(chainIdResult);
+
+      const userInfoResult = await getUserInfo();
+      setUserInfo(userInfoResult);
     };
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchData();
-  }, [getAccounts, getChainId]);
+  }, [getAccounts, getChainId, getUserInfo]);
 
   const contextValues = useMemo(() => {
     return {
@@ -176,12 +184,14 @@ export const Web3Provider: FC<{ children: any }> = ({ children }) => {
       provider,
       web3auth,
       address,
+      userInfo,
       chainId,
       login,
       logout,
-      getUserInfo,
       switchNetwork,
       sendTransaction,
+      getUserInfo,
+      getAccounts,
       signMessage,
       getPrivateKey,
     };
@@ -190,12 +200,14 @@ export const Web3Provider: FC<{ children: any }> = ({ children }) => {
     provider,
     web3auth,
     address,
+    userInfo,
     chainId,
     login,
     logout,
-    getUserInfo,
     switchNetwork,
     sendTransaction,
+    getUserInfo,
+    getAccounts,
     signMessage,
     getPrivateKey,
   ]);

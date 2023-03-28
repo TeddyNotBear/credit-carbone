@@ -1,14 +1,14 @@
 import { UCO, IUCO } from './../models/uco.model';
 import { SCC, ISCC } from './../models/scc.model';
 
-// import * as IPFS from 'ipfs-core'
+// import { create } from 'ipfs-core';
 
 export class FileController {
 
     public async generateJsonFiles(jsonData: Array<any>, type: string, userEmail: string) {
         jsonData.map((data: any) => {
             if(type === 'UCO') this.createUCOInDB(data, userEmail);
-            else this.createSCCInDB(data, userEmail);
+            if(type === 'SCC') this.createSCCInDB(data, userEmail);
         })
     }
 
@@ -38,8 +38,8 @@ export class FileController {
         return SCC.find(filter);
     }
 
-    /* public async uploadToIPFS(jsonData: Array<string>) {
-        const node = await IPFS.create({ repo: "Credit Carbone" + Math.random() });
+    /*public async uploadToIPFS(jsonData: Array<string>) {
+        const node = await create({ repo: "Credit Carbone" + Math.random() });
         let ipfsHashArr: Array<string> = [];
         if(jsonData && jsonData.length > 0) {
             for(const json in jsonData) {
@@ -50,6 +50,6 @@ export class FileController {
             }
         }
         return ipfsHashArr;
-    } */
+    }*/
 
 }

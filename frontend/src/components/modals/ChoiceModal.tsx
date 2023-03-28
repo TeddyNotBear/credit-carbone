@@ -22,7 +22,7 @@ interface ChoiceModalProps {
 }
   
 export const ChoiceModal: FC<ChoiceModalProps> = ({ isOpen, onClose }) => {
-  const { login, logout, getUserInfo, address } = useWeb3Auth();
+  const { login, logout, getUserInfo, getAccounts, address } = useWeb3Auth();
   const [role, setRole] = useState<string>();
   const { mutationFunc } = useCreateNewUser();
 
@@ -33,28 +33,37 @@ export const ChoiceModal: FC<ChoiceModalProps> = ({ isOpen, onClose }) => {
   const handleRegister = useCallback(async () => {
     await login();
     const userInfo = await getUserInfo();
-    
-    console.log(userInfo.email)
-    console.log(address)
-    console.log(role)
-    if(userInfo.email && address && role) {
+    const address = await getAccounts();
+
+    if(userInfo) {
+      console.log(userInfo.email)
+      console.log(address)
+      console.log(role)
       console.log('Condition OK !')
-      localStorage.setItem("userEmail", userInfo.email);
-      localStorage.setItem("walletAddress", address);
-    
-      mutationFunc({
-        email: userInfo.email,
-        wallet_address: address,
-        role,
-        onSuccess: handleSuccess
-      })
+
+      if(role) {
+        console.log('Condition OK 2!')
+        localStorage.setItem("userEmail", userInfo.email);
+        localStorage.setItem("walletAddress", address);
+        localStorage.setItem("role", role);
+      
+        mutationFunc({
+          email: userInfo.email,
+          wallet_address: address,
+          role,
+          onSuccess: handleSuccess
+        })
+      }
+      
     }
-  }, [role, address, getUserInfo]);
+  }, [role, getAccounts, getUserInfo]);
 
   const handleLogin = useCallback(async () => {
     await login();
     const userInfo = await getUserInfo();
-    if(userInfo.email && address && role) {
+    const address = await getAccounts();
+
+    if(userInfo && address && role) {
       localStorage.setItem("userEmail", userInfo.email);
       localStorage.setItem("walletAddress", address);
     }

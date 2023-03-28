@@ -7,20 +7,23 @@ import * as XLSX from 'xlsx/xlsx.mjs';
 import { useWeb3Auth } from "../../hooks/useWeb3Auth";
 import { useGetUCOByEmail } from "../../api/file";
 
-export const UploadBox: FC = () => {
+export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const controls = useAnimation();
     const startAnimation = () => controls.start("hover");
     const stopAnimation = () => controls.stop();
 
     const [jsonData, setJsonData] = useState<string[] | undefined>();
+    const [isSuccess, setSuccess] = useState<boolean>(false);
+    const [callbackMessage, setCallbackMessage] = useState<string>();
     const [ipfsLoading, setIpfsLoading] = useState<any>(false);
     const [userEmail, setUserEmail] = useState<string>("");
     const { uploadToIPFS } = useUploadToIPFS();
     const { upload } = useUpload();
-    const { getUserInfo } = useWeb3Auth();
+    const { userInfo } = useWeb3Auth();
 
-    const uploadToIPFSSuccess = (callbackData: string[]) => {
-        console.log(callbackData);
+    const uploadToIPFSSuccess = (callbackData: any) => {
+        setSuccess(true);
+        setCallbackMessage(callbackData.message);
     };
 
     const uploadToIPFSError = () => {};
@@ -35,15 +38,22 @@ export const UploadBox: FC = () => {
             });
             setIpfsLoading(false);
 
-            const userInfo = await getUserInfo();
-            upload({
-                jsonData: jsonData,
-                type: 'UCO',
-                email: userInfo.email,
-            })
-
+            if(type === 'UCO') {
+                upload({
+                    jsonData: jsonData,
+                    type: 'UCO',
+                    email: userInfo.email,
+                })
+            }
+            if(type === 'SCC') {
+                upload({
+                    jsonData: jsonData,
+                    type: 'SCC',
+                    email: userInfo.email,
+                })
+            }
         }
-    }, [jsonData, getUserInfo]);
+    }, [jsonData, userInfo]);
 
     const handleXLSXFile = useCallback(async (event: any) => {
         event.preventDefault();
@@ -125,6 +135,7 @@ export const UploadBox: FC = () => {
                     </Box>
                 </Box>
             </AspectRatio>
+            { isSuccess && <Text color="green">{ callbackMessage }</Text> }
             <ButtonGroup gap='1' pt={4}>
                 <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
                 <Button colorScheme='orange'>Mint</Button>

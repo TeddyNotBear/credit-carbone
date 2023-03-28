@@ -8,14 +8,14 @@ import { useGetUCOByEmail } from "../../api/file";
 
 export const MetadatasBox: FC = () => {
   const { ucosData, isLoading, isError } = useGetUCOByEmail();
-  console.log(ucosData)
+
   return (
     <>
       <Grid templateColumns='repeat(3, 1fr)' gap={6}>
         {
           ucosData && ucosData.map((ucoData: IUCO) => {
             return (
-              <Box maxW='sm' borderWidth='1px' borderRadius='lg' overflow='hidden'>
+              <Box maxW='sm' key={ucoData.id_uco} borderWidth='1px' borderRadius='lg' overflow='hidden'>
                 <Image src={UCOLogo} alt={UCOLogo} />
 
                 <Box p='6'>

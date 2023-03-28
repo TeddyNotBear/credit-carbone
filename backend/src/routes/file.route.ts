@@ -36,7 +36,6 @@ router.post('/upload', async (req: any, res: express.Response) => {
 router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
     try {
         const jsonData = req.body.jsonData;
-        console.log(jsonData);
         if(jsonData) {
             const fileController = new FileController();
             // fileController.uploadToIPFS(jsonData);

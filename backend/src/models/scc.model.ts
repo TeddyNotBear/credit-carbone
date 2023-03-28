@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose'
 
 export interface ISCC extends Document {
-    id_scc?: string | undefined,
+    id_scc: string,
     scc_address?: string | undefined,
     scc_blockchain?: string | undefined,	
     scc_mint_date?: string | undefined,		
@@ -27,7 +27,7 @@ export interface ISCC extends Document {
 }
 
 const sccSchema = new Schema({
-    id_scc: { type: String },
+    id_scc: { type: String, unique: true, required: true },
     scc_address: { type: String },
     scc_blockchain: { type: String },	
     scc_mint_date: { type: String },		

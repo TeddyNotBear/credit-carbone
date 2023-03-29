@@ -61,11 +61,11 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
             });
             setIpfsLoading(false);
 
-            /*upload({
+            upload({
                 jsonData: jsonData,
                 type: 'SCC',
                 email: userInfo.email,
-            })*/
+            })
         }
     }, [jsonData, userInfo]);
 
@@ -85,6 +85,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
                     </Button>
                     <Button colorScheme='green' onClick={async () => {
                         handleVerif();
+                        handleUpload();
                         onClose();
                     }}>Accept</Button>
                 </ModalFooter>

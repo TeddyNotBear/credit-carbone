@@ -19,7 +19,7 @@ import { RPC } from '../types/rpc/RPC';
 
 interface Web3Config {
   web3auth: Web3Auth | null;
-  provider: SafeEventEmitterProvider | null;
+  provider: any;
   network: Network;
   address: string | null;
   userInfo: any;
@@ -54,7 +54,7 @@ export const Web3Context = createContext<Web3Config>({
 export const Web3Provider: FC<{ children: any }> = ({ children }) => {
   const [network, setNetwork] = useState<Network>(DEFAULT_NETWORK);
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
-  const [provider, setProvider] = useState<SafeEventEmitterProvider | null>(null,);
+  const [provider, setProvider] = useState<any>(null,);
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [userInfo, setUserInfo] = useState<any>();

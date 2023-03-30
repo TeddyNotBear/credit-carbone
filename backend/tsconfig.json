@@ -1,11 +1,16 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": false,
-    "esModuleInterop": true,
+	"compilerOptions": {
+    "module": "ESNext",
+		"outDir": "dist",
+		"isolatedModules": true,
     "moduleResolution": "node",
-    "noEmit": true,
-    "lib": ["ES2020", "ES2020.Promise", "ES2020.String", "ES2020.BigInt", "DOM", "DOM.Iterable"],
-  },
-  "include": ["src", "../*.ts"]
+    "allowSyntheticDefaultImports": true,
+	},
+  "include": ["src", "../*.ts"],
+  "exclude": ["node_modules"],
+	"ts-node": {
+		"transpileOnly": true,
+		"files": true,
+		"experimentalResolver": true
+	}
 }

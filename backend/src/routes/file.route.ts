@@ -1,9 +1,9 @@
-import { FileController } from './../controllers/file.controller';
+import { FileController } from './../controllers/file.controller.js';
 import express from "express";
 
 const router = express.Router();
 
-router.use(function(req: any, res: express.Response, next) {
+router.use(function(_req: any, res: express.Response, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -17,15 +17,16 @@ router.post('/upload', async (req: any, res: express.Response) => {
         
         if(jsonData) {
             const fileController = new FileController();
-            fileController.generateJsonFiles(jsonData, type, email);
+            await fileController.generateJsonFiles(jsonData, type, email);
         }
+
         if (jsonData == undefined) {
             return res.status(400).send({ message: "Please upload a file!" });
         }
+
         return res.status(200).send({
             message: "Uploaded files successfully",
         });
-
     } catch (error) {
         res.status(500).send({
             message: `Could not upload the files`,
@@ -38,14 +39,16 @@ router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
         const jsonData = req.body.jsonData;
         if(jsonData) {
             const fileController = new FileController();
-            // fileController.uploadToIPFS(jsonData);
+            const ipfsHashArr = await fileController.uploadToIPFS(jsonData);
+
+            return res.status(200).send({
+                message: "Uploaded files to IPFS successfully",
+                data: ipfsHashArr,
+            });
         }
         if (jsonData == undefined) {
             return res.status(400).send({ message: "Please upload a file!" });
         }
-        return res.status(200).send({
-            message: "Uploaded files to IPFS successfully",
-        });
 
     } catch (error) {
         res.status(500).send({

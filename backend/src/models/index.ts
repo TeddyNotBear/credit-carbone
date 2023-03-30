@@ -1,3 +1,3 @@
-export * from './user.model';
-export * from './scc.model';
-export * from './uco.model';
+export * from './user.model.js';
+export * from './scc.model.js';
+export * from './uco.model.js';

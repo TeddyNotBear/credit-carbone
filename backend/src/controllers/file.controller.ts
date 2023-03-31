@@ -73,6 +73,9 @@ export class FileController {
                 }
             }
         }
+        
+        await node.stop();
+        
         return ipfsHashArr;
     }
 

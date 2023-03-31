@@ -39,11 +39,11 @@ router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
         const jsonData = req.body.jsonData;
         if(jsonData) {
             const fileController = new FileController();
-            const ipfsHashArr = await fileController.uploadToIPFS(jsonData);
+            const ipfsHashesArr = await fileController.uploadToIPFS(jsonData);
 
             return res.status(200).send({
                 message: "Uploaded files to IPFS successfully",
-                data: ipfsHashArr,
+                data: ipfsHashesArr,
             });
         }
         if (jsonData == undefined) {

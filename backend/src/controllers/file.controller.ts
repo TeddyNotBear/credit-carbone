@@ -62,7 +62,7 @@ export class FileController {
     }
 
     public async uploadToIPFS(jsonData: Array<string>) {
-        const node = await create({ repo: "Credit Carbone" + Math.random() });
+        const node = await create({ repo: "Credit-Carbone" + Math.random() });
 
         let ipfsHashArr: Array<string> = [];
         if(jsonData && jsonData.length > 0) {

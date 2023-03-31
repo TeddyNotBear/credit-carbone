@@ -2,29 +2,73 @@ import { AspectRatio, Box, Button, ButtonGroup, Center, Container, Heading, Inpu
 import { motion, useAnimation } from "framer-motion";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useUpload, useUploadToIPFS } from "../../api/file";
+import { ethers, Contract } from 'ethers';
 
-import * as XLSX from 'xlsx/xlsx.mjs';
 import { useWeb3Auth } from "../../hooks/useWeb3Auth";
 import { useGetUCOByEmail } from "../../api/file";
 import { SccModal } from "../modals/SccModal";
+
+import { UCO_PROXY_CONTRACT_ADDRESS } from "../../constants/addresses";
+import { UCO_ABI } from "../../abi";
+
+import * as XLSX from 'xlsx/xlsx.mjs';
+import { trimString } from "../../utils/trimString";
+// import * as IPFS from 'ipfs-core';
 
 export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const controls = useAnimation();
     const startAnimation = () => controls.start("hover");
     const stopAnimation = () => controls.stop();
-    const { isOpen, onOpen, onClose } = useDisclosure();
+
     const [jsonData, setJsonData] = useState<string[] | undefined>();
     const [isSuccess, setSuccess] = useState<boolean>(false);
     const [callbackMessage, setCallbackMessage] = useState<string>();
+    const [ipfsHashes, setIpfsHashes] = useState<[]>();
     const [ipfsLoading, setIpfsLoading] = useState<any>(false);
     const [userEmail, setUserEmail] = useState<string>("");
+    const [contract, setContract] = useState<any>();
+    const [txHash, setTxHash] = useState<string>();
+
+    const { provider } = useWeb3Auth();
+    const { isOpen, onOpen, onClose } = useDisclosure();
     const { uploadToIPFS } = useUploadToIPFS();
     const { upload } = useUpload();
     const { userInfo } = useWeb3Auth();
 
+    /*useEffect(() => {
+        const init = async () => {
+            const browserProvider = new ethers.BrowserProvider(provider);
+            const signer = await browserProvider.getSigner();
+            const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
+            setContract(ucoContract);
+        };
+
+        init();
+    }, [provider]);*/
+
+    const mint = async () => {
+        console.log(ipfsHashes);
+        try {
+            if(ipfsHashes) {
+                const browserProvider = new ethers.BrowserProvider(provider);
+                const signer = await browserProvider.getSigner();
+                const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
+                const tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
+                setTxHash(tx.hash);
+                setIpfsLoading(true);
+                await tx.wait();
+                setIpfsLoading(false);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const uploadToIPFSSuccess = (callbackData: any) => {
         setSuccess(true);
         setCallbackMessage(callbackData.message);
+        setIpfsHashes(callbackData.data);
+        console.log(callbackData.data);
     };
 
     const uploadToIPFSError = () => {};
@@ -128,13 +172,25 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 </Box>
             </AspectRatio>
             { isSuccess && <Text color="green">{ callbackMessage }</Text> }
+            { txHash &&  <a className='text-blue-600' href={`https://mumbai.polygonscan.com/tx/${txHash}`}>Tx hash : { trimString(txHash, 12) }</a> }
             <ButtonGroup gap='1' pt={4}>
                 {
                     type && type === 'UCO'
                     ? <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
                     : <Button onClick={onOpen} colorScheme='green'>Upload</Button>
                 }
-                <Button colorScheme='orange'>Mint</Button>
+                { !ipfsLoading 
+                    ? <Button onClick={mint} colorScheme='orange'>Mint</Button>
+                    : <Button 
+                        isLoading 
+                        loadingText='Minting...' 
+                        colorScheme='orange'
+                        variant='outline'
+                        spinnerPlacement='start'
+                    >
+                        Mint
+                    </Button> 
+                }
             </ButtonGroup>
             <SccModal jsonData={jsonData} isOpen={isOpen} onClose={onClose} />
       </div>

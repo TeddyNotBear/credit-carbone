@@ -8,32 +8,47 @@ import {
     ModalOverlay,
     ModalCloseButton
 } from '@chakra-ui/react';
-import { FC, useCallback, useState } from 'react';
+import { Contract, ethers } from 'ethers';
+import {  FC, useCallback, useState } from 'react';
+import { SCC_ABI } from '../../abi';
 import { useUpload, useUploadToIPFS, useVerif } from '../../api/file';
+import { SCC_PROXY_CONTRACT_ADDRESS } from '../../constants/addresses';
 import { useWeb3Auth } from '../../hooks/useWeb3Auth';
     
 interface SccModalProps {
     jsonData: string[] | undefined;
     isOpen: boolean;
     onClose: () => void;
+    setSuccess: any;
+    setCallbackMessage: any;
+    setIpfsHashes: any;
 }
     
-export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
+export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSuccess, setCallbackMessage, setIpfsHashes }) => {
     const [ipfsLoading, setIpfsLoading] = useState<boolean>(false);
     const [isVerif, setIfVerif] = useState<boolean>();
+    
     const { uploadToIPFS } = useUploadToIPFS();
     const { upload } = useUpload();
-    const { userInfo } = useWeb3Auth();
+    const { userInfo, provider } = useWeb3Auth();
     const { verif } = useVerif();
 
     const uploadToIPFSSuccess = (callbackData: any) => {
-        console.log(callbackData.message);
+        { setSuccess(true); }
+        { setCallbackMessage(callbackData.message); }
+        { setIpfsHashes(callbackData.data); }
+        if(jsonData) {
+            upload({
+                jsonData: jsonData,
+                type: 'SCC',
+                email: userInfo.email,
+            })
+        }
     };
 
     const uploadToIPFSError = () => {};
 
     const verifSuccess = (callbackData: any) => {
-        console.log(callbackData.message);
         setIfVerif(callbackData.message);
     };
 
@@ -51,8 +66,8 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
     }, [jsonData, userInfo]);
 
     const handleUpload = useCallback(async () => {
+        console.log(jsonData);
         if(jsonData) {
-            console.log("VERIFIED")
             setIpfsLoading(true);
             uploadToIPFS({
                 jsonData: jsonData,
@@ -60,14 +75,8 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose }) => {
                 onError: uploadToIPFSError,
             });
             setIpfsLoading(false);
-
-            upload({
-                jsonData: jsonData,
-                type: 'SCC',
-                email: userInfo.email,
-            })
         }
-    }, [jsonData, userInfo]);
+    }, [setSuccess]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>

@@ -1,15 +1,14 @@
-import { AspectRatio, Box, Button, ButtonGroup, Center, Container, Heading, Input, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import { AspectRatio, Box, Button, ButtonGroup, Heading, Input, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { motion, useAnimation } from "framer-motion";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useUpload, useUploadToIPFS } from "../../api/file";
 import { ethers, Contract } from 'ethers';
 
 import { useWeb3Auth } from "../../hooks/useWeb3Auth";
-import { useGetUCOByEmail } from "../../api/file";
 import { SccModal } from "../modals/SccModal";
 
-import { UCO_PROXY_CONTRACT_ADDRESS } from "../../constants/addresses";
-import { UCO_ABI } from "../../abi";
+import { SCC_PROXY_CONTRACT_ADDRESS, UCO_PROXY_CONTRACT_ADDRESS } from "../../constants/addresses";
+import { SCC_ABI, UCO_ABI } from "../../abi";
 
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { trimString } from "../../utils/trimString";
@@ -24,8 +23,6 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const [callbackMessage, setCallbackMessage] = useState<string>();
     const [ipfsHashes, setIpfsHashes] = useState<[]>();
     const [ipfsLoading, setIpfsLoading] = useState<any>(false);
-    const [userEmail, setUserEmail] = useState<string>("");
-    const [contract, setContract] = useState<any>();
     const [txHash, setTxHash] = useState<string>();
 
     const { provider } = useWeb3Auth();
@@ -40,12 +37,20 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
             if(ipfsHashes) {
                 const browserProvider = new ethers.BrowserProvider(provider);
                 const signer = await browserProvider.getSigner();
-                const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
-                const tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
-                setTxHash(tx.hash);
+                let tx;
+                if(type === 'UCO') {
+                    console.log('UCO');
+                    const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
+                    tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
+                } else if(type === 'SCC') {
+                    console.log('SCC');
+                    const ucoContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
+                    tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
+                }
                 setIpfsLoading(true);
                 await tx.wait();
                 setIpfsLoading(false);
+                setTxHash(tx.hash);
             }
         } catch (err) {
             console.error(err);
@@ -53,6 +58,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     };
 
     const uploadToIPFSSuccess = (callbackData: any) => {
+        console.log(type);
         setSuccess(true);
         setCallbackMessage(callbackData.message);
         setIpfsHashes(callbackData.data);
@@ -60,7 +66,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
         if(jsonData) {
             upload({
                 jsonData: jsonData,
-                type: 'UCO',
+                type: type,
                 email: userInfo.email,
             })
         }
@@ -69,6 +75,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const uploadToIPFSError = () => {};
 
     const handleUpload = useCallback(async () => {
+        console.log(jsonData);
         if(jsonData) {
             setIpfsLoading(true);
             uploadToIPFS({
@@ -91,7 +98,6 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 const worksheet = workbook.Sheets[sheetName];
                 const json = XLSX.utils.sheet_to_json(worksheet);
                 setJsonData(json);
-                console.log(json)
             }
             reader.readAsArrayBuffer(event.target.files[0]);
         }
@@ -109,7 +115,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                     role="group"
                     transition="all 150ms ease-in-out"
                     _hover={{
-                    shadow: "md"
+                        shadow: "md"
                     }}
                     as={motion.div}
                     initial="rest"
@@ -185,7 +191,14 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                     </Button> 
                 }
             </ButtonGroup>
-            <SccModal jsonData={jsonData} isOpen={isOpen} onClose={onClose} setSuccess={setSuccess} />
+            <SccModal 
+                jsonData={jsonData} 
+                isOpen={isOpen} 
+                onClose={onClose} 
+                setSuccess={setSuccess} 
+                setCallbackMessage={setCallbackMessage} 
+                setIpfsHashes={setIpfsHashes}
+            />
       </div>
     );
 }

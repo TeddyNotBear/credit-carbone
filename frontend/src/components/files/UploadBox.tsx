@@ -13,7 +13,6 @@ import { UCO_ABI } from "../../abi";
 
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { trimString } from "../../utils/trimString";
-// import * as IPFS from 'ipfs-core';
 
 export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const controls = useAnimation();
@@ -34,17 +33,6 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const { uploadToIPFS } = useUploadToIPFS();
     const { upload } = useUpload();
     const { userInfo } = useWeb3Auth();
-
-    /*useEffect(() => {
-        const init = async () => {
-            const browserProvider = new ethers.BrowserProvider(provider);
-            const signer = await browserProvider.getSigner();
-            const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
-            setContract(ucoContract);
-        };
-
-        init();
-    }, [provider]);*/
 
     const mint = async () => {
         console.log(ipfsHashes);
@@ -69,6 +57,13 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
         setCallbackMessage(callbackData.message);
         setIpfsHashes(callbackData.data);
         console.log(callbackData.data);
+        if(jsonData) {
+            upload({
+                jsonData: jsonData,
+                type: 'UCO',
+                email: userInfo.email,
+            })
+        }
     };
 
     const uploadToIPFSError = () => {};
@@ -82,14 +77,8 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 onError: uploadToIPFSError,
             });
             setIpfsLoading(false);
-
-            upload({
-                jsonData: jsonData,
-                type: 'UCO',
-                email: userInfo.email,
-            })
         }
-    }, [jsonData, userInfo]);
+    }, [jsonData]);
 
     const handleXLSXFile = useCallback(async (event: any) => {
         event.preventDefault();
@@ -172,7 +161,11 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 </Box>
             </AspectRatio>
             { isSuccess && <Text color="green">{ callbackMessage }</Text> }
-            { txHash &&  <a className='text-blue-600' href={`https://mumbai.polygonscan.com/tx/${txHash}`}>Tx hash : { trimString(txHash, 12) }</a> }
+            { txHash &&  
+                <a href={`https://mumbai.polygonscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
+                    Tx hash : { trimString(txHash, 18) }
+                </a>
+            }
             <ButtonGroup gap='1' pt={4}>
                 {
                     type && type === 'UCO'
@@ -192,7 +185,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                     </Button> 
                 }
             </ButtonGroup>
-            <SccModal jsonData={jsonData} isOpen={isOpen} onClose={onClose} />
+            <SccModal jsonData={jsonData} isOpen={isOpen} onClose={onClose} setSuccess={setSuccess} />
       </div>
     );
 }

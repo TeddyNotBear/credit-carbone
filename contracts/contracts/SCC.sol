@@ -1,29 +1,34 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract SCC is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable {
+contract SCC is 
+    ERC1155URIStorageUpgradeable, 
+    OwnableUpgradeable, 
+    ReentrancyGuardUpgradeable, 
+    PausableUpgradeable
+{
     using Counters for Counters.Counter;
     Counters.Counter private sccCounter;
-
-    string private _baseTokenURI;
 
     mapping(uint256 => bool) public onSale;
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => string) public cidOfTokenId;
+    mapping(uint256 => bool) private _totalSupply;
 
     uint256[] public onSaleTokenIds;
 
-    function initialize() public initializer {
-        __ERC1155_init('ipfs/');
+    function initialize(string memory _baseTokenURI) public initializer {
+        __ERC1155URIStorage_init();
         __Ownable_init();
         __ReentrancyGuard_init();
+        _setBaseURI(_baseTokenURI);
     }
 
     function getOnSaleTokenIds() external view returns (uint256[] memory) {
@@ -34,13 +39,22 @@ contract SCC is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         return tokenPrice[tokenId];
     }
 
+    function exists(uint256 tokenId) public view returns (bool) {
+        if(_totalSupply[tokenId]) {
+            return true;
+        }
+        return false;
+    }
+
     function mint(uint256 quantity, string[] memory cidArr) external {
         uint256[] memory sccIdArr = new uint[](quantity);
         uint256[] memory amountArr = new uint[](quantity);
-        for (uint i = sccCounter.current(); i < quantity; i++) {
-            cidOfTokenId[sccCounter.current()] = cidArr[i];
+        uint256 currentTokenId = sccCounter.current();
+        for (uint i = currentTokenId; i < quantity; i++) {
             sccIdArr[i] = sccCounter.current();
             amountArr[i] = 1;
+            _totalSupply[i] = true;
+            _setURI(sccCounter.current(), cidArr[i]);
             sccCounter.increment();
         }
         
@@ -48,29 +62,21 @@ contract SCC is ERC1155Upgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         _mintBatch(msg.sender, sccIdArr, amountArr, '');
     }
 
-    function tokenURI(uint256 tokenId) public view returns (string memory) {
-        string memory cid = cidOfTokenId[tokenId];
-        string memory uri = uri(tokenId);
-        return bytes(uri).length > 0
-            ? string(abi.encodePacked(uri, cid))
-            : "";
-    }
-
     // Allow smart-contract's admin to put a SCC on sale
-    /*function putOnSale(uint256 tokenId, uint256 price) external {
-        require(_exists(tokenId), "SCC does not exists.");
-        require(ownerOf(tokenId) == msg.sender, "You must owns the SCC to sell it.");
+    function putOnSale(uint256 tokenId, uint256 price) external {
+        require(exists(tokenId), "SCC does not exists.");
+        require(balanceOf(msg.sender, tokenId) == 1, "You must owns the SCC to sell it.");
         require(price > 0, "Price must be greater than 0.");
 
         onSale[tokenId] = true;
         tokenPrice[tokenId] = price;
         onSaleTokenIds.push(tokenId);
-    }*/
+    }
 
     // Allow everyone to buy a SCC
-    // function buy(uint256 tokenId) external payable {
+    function buy(uint256 tokenId) external payable {
         // Make msg.sender payable in order to let it send ether
-    // }
+    }
 
     // Function to receive Ether. msg.data must be empty
     receive() external payable {}

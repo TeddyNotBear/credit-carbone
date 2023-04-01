@@ -27,6 +27,12 @@ export interface GetUCOByEmailArgs {
     onError?: (error: Error) => void;
 }
 
+export interface updateSCCArgs {
+    sccId: string;
+    onSuccess?: (successCallbackData: any) => void;
+    onError?: (error: Error) => void;
+}
+
 const URI = '/api/file';
 
 export const useGetUCOByEmail = () => {
@@ -145,4 +151,47 @@ export const useVerif = () => {
     });
 
     return { ...mutation, verif: mutation.mutate };
+};
+
+export const useUpdateSCC = () => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation<
+        { message: string; mutationResult: any },
+        Error,
+        updateSCCArgs
+    >({
+       mutationFn: async ({ sccId }: updateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+        fetchApi({
+            uri: `${URI}/scc/update/${sccId}`,
+            method: methods.PUT,
+            body: { sccId }
+        }),
+        onSuccess: (data, { onSuccess }) => {
+            queryClient.invalidateQueries([URI]);
+            if (onSuccess) {
+                onSuccess(data);
+            }
+        },
+        onError: (error, { onError }) => {
+            if (onError) {
+                onError(error);
+            }
+        },
+    });
+
+    return { ...mutation, updateSCC: mutation.mutate };
+};
+
+export const useGetSCCOnSale = () => {
+    const query = useQuery<any, Error>({
+      queryKey: [URI],
+      queryFn: async (): Promise<any> => {
+        return fetchApi({
+          uri: `${URI}/scc/onSale`,
+          method: methods.GET,
+        });
+      },
+    });
+    return { ...query, sccsData: query.data };
 };

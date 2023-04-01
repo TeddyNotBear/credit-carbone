@@ -23,6 +23,7 @@ export interface ISCC extends Document {
     uco_project_developer?: string | undefined,	
     scc_uco_id: string,	
     uco_wallet_id?: string | undefined,
+    onSale?: boolean,
     uploadedBy: string,
 }
 
@@ -49,6 +50,7 @@ const sccSchema = new Schema({
     uco_project_developer: { type: String },	
     scc_uco_id: { type: String, required: true  },	
     uco_wallet_id: { type: String },
+    onSale: { type: Boolean, default: false },
     uploadedBy: { type: String, ref: 'User' },
 });
 

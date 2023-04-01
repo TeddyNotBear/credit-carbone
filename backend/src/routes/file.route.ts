@@ -1,5 +1,6 @@
 import { FileController } from './../controllers/file.controller.js';
 import express from "express";
+import { SCC } from '../models/scc.model.js';
 
 const router = express.Router();
 
@@ -73,6 +74,20 @@ router.post('/verif', async (req, res: express.Response) => {
     }
 });
 
+router.put('/scc/update/:sccId', async (req, res: express.Response) => {
+    const sccId = req.params['sccId'];
+    if(!sccId) return res.status(500);
+    
+    try {
+        const filter = { id_scc: sccId };
+        const update = { onSale: true };
+        await SCC.findOneAndUpdate(filter, update, { new: true });
+        return res.status(200).send({ message: "Update successfully!"});
+    } catch (error) {
+        return res.status(400).send({ message: "" });
+    }
+});
+
 router.get('/uco/user/:userEmail', async (req, res: express.Response) => {
     const userEmail = req.params['userEmail'];
     if(!userEmail) return res.status(500).send({ message: "Please enter an email!"});
@@ -97,6 +112,17 @@ router.get('/scc/user/:userEmail', async (req, res: express.Response) => {
         const fileController = new FileController();
         const userSCC = await fileController.getUserSCC(userEmail);
         return res.status(200).send(userSCC);
+    } catch (error) {
+        console.log(error)
+    }
+
+});
+
+router.get('/scc/onSale', async (req, res: express.Response) => {
+    try {
+        const filter = { onSale: true };
+        const sccsData = await SCC.find(filter).exec();
+        return res.status(200).send(sccsData);
     } catch (error) {
         console.log(error)
     }

@@ -37,6 +37,21 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
         { setSuccess(true); }
         { setCallbackMessage(callbackData.message); }
         { setIpfsHashes(callbackData.data); }
+    };
+
+    const uploadToIPFSError = () => {};
+
+    const verifSuccess = async (callbackData: any) => {
+        setIfVerif(callbackData.message);
+        console.log('success :', jsonData);
+        await handleUpload(jsonData);
+        await handleUploadInDB(jsonData);
+    };
+
+    const verifError = () => {};
+
+    const handleUploadInDB = useCallback(async (jsonData: any) => {
+        console.log('upload in db :', jsonData);
         if(jsonData) {
             upload({
                 jsonData: jsonData,
@@ -44,17 +59,10 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
                 email: userInfo.email,
             })
         }
-    };
-
-    const uploadToIPFSError = () => {};
-
-    const verifSuccess = (callbackData: any) => {
-        setIfVerif(callbackData.message);
-    };
-
-    const verifError = () => {};
+    }, [jsonData, userInfo]);
 
     const handleVerif = useCallback(async () => {
+        console.log('verif :', jsonData);
         if(jsonData) {
             verif({
                 jsonData: jsonData,
@@ -65,8 +73,8 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
         }
     }, [jsonData, userInfo]);
 
-    const handleUpload = useCallback(async () => {
-        console.log(jsonData);
+    const handleUpload = useCallback(async (jsonData: any) => {
+        console.log('upload :', jsonData);
         if(jsonData) {
             setIpfsLoading(true);
             uploadToIPFS({
@@ -93,8 +101,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
                         Close
                     </Button>
                     <Button colorScheme='green' onClick={async () => {
-                        handleVerif();
-                        handleUpload();
+                        await handleVerif();
                         onClose();
                     }}>Accept</Button>
                 </ModalFooter>

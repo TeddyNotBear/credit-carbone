@@ -39,13 +39,11 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 const signer = await browserProvider.getSigner();
                 let tx;
                 if(type === 'UCO') {
-                    console.log('UCO');
                     const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
                     tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
                 } else if(type === 'SCC') {
-                    console.log('SCC');
-                    const ucoContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-                    tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
+                    const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
+                    tx = await sccContract.mint(ipfsHashes.length, ipfsHashes);
                 }
                 setIpfsLoading(true);
                 await tx.wait();

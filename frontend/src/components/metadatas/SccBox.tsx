@@ -1,24 +1,37 @@
-import { CheckIcon, StarIcon } from "@chakra-ui/icons";
-import { Badge, Box, Button, Flex, Grid, Image, Input, InputGroup, InputLeftElement, InputRightElement, SimpleGrid, Spacer, Stack } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Grid, Image, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { ISCC } from "../../types/SCC";
 
 import { SCCLogo } from "../../assets";
-import { useGetSCCByEmail } from "../../api/file";
-import { ethers } from "ethers";
+import { useGetSCCByEmail, useUpdateSCC } from "../../api/file";
+import { Contract, ethers } from "ethers";
+import { useWeb3Auth } from "../../hooks/useWeb3Auth";
+import { SCC_PROXY_CONTRACT_ADDRESS } from "../../constants/addresses";
+import { SCC_ABI } from "../../abi";
 
 export const SccBox: FC = () => {
   const { sccsData, isLoading, isError } = useGetSCCByEmail();
   const [amount, setAmount] = useState<string>('');
+  const { provider } = useWeb3Auth();
+  const { updateSCC } = useUpdateSCC();
 
   const handleAmount = (e: any) => {
     setAmount(e.target.value);
   }
 
-  const sellItem = async (amount: string, idx: number) => {
+  const sellItem = async (amount: string, idx: number, sccId: string) => {
     try {
       console.log(idx);
-      console.log(ethers.parseEther(amount));
+      const browserProvider = new ethers.BrowserProvider(provider);
+      const signer = await browserProvider.getSigner();
+      const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
+      const tx = await sccContract.putOnSale(idx, ethers.parseEther(amount));
+      await tx.wait();
+      console.log(tx.hash);
+
+      updateSCC({
+        sccId: sccId,
+      });
     } catch (error: any) {
       console.error(error);
     }
@@ -70,7 +83,7 @@ export const SccBox: FC = () => {
                     <InputLeftElement pointerEvents='none' color='gray.300' fontSize='1.2em' children='$' />
                     <Input onChange={(e: any) => handleAmount(e)} placeholder='Enter amount' />
                   </InputGroup>
-                  <Button onClick={() => sellItem(amount, idx)} colorScheme='orange'>Sell</Button>
+                  <Button onClick={() => sellItem(amount, idx, sccData.id_scc)} colorScheme='orange'>Sell</Button>
                 </Flex>
               </Box>
             );

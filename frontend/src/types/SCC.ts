@@ -21,5 +21,6 @@ export interface ISCC {
     uco_project_developer?: string | undefined,	
     scc_uco_id: string,	
     uco_wallet_id?: string | undefined,
+    onSale?: boolean,
     uploadedBy: string,
 }

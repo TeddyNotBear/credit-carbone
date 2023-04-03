@@ -82,6 +82,7 @@ contract SCC is
         require(balanceOf(msg.sender, tokenId) == 1, "You must owns the SCC to sell it.");
 
         onSale[tokenId] = false;
+        tokenPrice[tokenId] = 0;
         _remove(tokenId);
     }
 

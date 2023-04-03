@@ -163,7 +163,7 @@ export const useUpdateSCC = () => {
     >({
        mutationFn: async ({ sccId }: updateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
-            uri: `${URI}/scc/update/${sccId}`,
+            uri: `${URI}/scc/update`,
             method: methods.PUT,
             body: { sccId }
         }),

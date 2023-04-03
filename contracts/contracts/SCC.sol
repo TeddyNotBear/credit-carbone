@@ -71,6 +71,8 @@ contract SCC is
         onSale[tokenId] = true;
         tokenPrice[tokenId] = price;
         onSaleTokenIds.push(tokenId);
+
+        
     }
 
     // Allow everyone to buy a SCC

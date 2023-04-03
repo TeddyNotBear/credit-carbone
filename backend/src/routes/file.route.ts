@@ -7,6 +7,7 @@ const router = express.Router();
 router.use(function(_req: any, res: express.Response, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE');
     next();
 });
 
@@ -74,8 +75,8 @@ router.post('/verif', async (req, res: express.Response) => {
     }
 });
 
-router.put('/scc/update/:sccId', async (req, res: express.Response) => {
-    const sccId = req.params['sccId'];
+router.put('/scc/update', async (req, res: express.Response) => {
+    const sccId = req.body.sccId;
     if(!sccId) return res.status(500);
     
     try {

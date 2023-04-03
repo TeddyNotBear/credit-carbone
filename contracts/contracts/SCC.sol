@@ -24,6 +24,8 @@ contract SCC is
 
     uint256[] public onSaleTokenIds;
 
+    event PutOnSale(uint256 _tokenId, uint256 _price);
+
     function initialize(string memory _baseTokenURI) public initializer {
         __ERC1155URIStorage_init();
         __Ownable_init();
@@ -72,7 +74,15 @@ contract SCC is
         tokenPrice[tokenId] = price;
         onSaleTokenIds.push(tokenId);
 
-        
+        emit PutOnSale(tokenId, price);
+    }
+
+    function removeFromSale(uint256 tokenId) external {
+        require(exists(tokenId), "SCC does not exists.");
+        require(balanceOf(msg.sender, tokenId) == 1, "You must owns the SCC to sell it.");
+
+        onSale[tokenId] = false;
+        _remove(tokenId);
     }
 
     // Allow everyone to buy a SCC
@@ -86,4 +96,9 @@ contract SCC is
     // Fallback function is called when msg.data is not empty
     fallback() external payable {}
 
+    function _remove(uint256 index) internal {
+        onSaleTokenIds[index] = onSaleTokenIds[onSaleTokenIds.length - 1];
+        onSaleTokenIds.pop();
+    } 
+    
 }

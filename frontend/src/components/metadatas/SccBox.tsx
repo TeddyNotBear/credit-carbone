@@ -3,7 +3,7 @@ import { FC, useState } from "react";
 import { ISCC } from "../../types/SCC";
 
 import { SCCLogo } from "../../assets";
-import { useGetSCCByEmail, useUpdateSCC } from "../../api/file";
+import { useGetSCCByEmail, usePutOnSaleSCC } from "../../api/file";
 import { Contract, ethers } from "ethers";
 import { useWeb3Auth } from "../../hooks/useWeb3Auth";
 import { SCC_PROXY_CONTRACT_ADDRESS } from "../../constants/addresses";
@@ -13,7 +13,7 @@ import { trimString } from "../../utils/trimString";
 export const SccBox: FC = () => {
   const { sccsData, isLoading, isError } = useGetSCCByEmail();
   const { provider } = useWeb3Auth();
-  const { updateSCC } = useUpdateSCC();
+  const { putOnSaleSCC } = usePutOnSaleSCC();
 
   const [amount, setAmount] = useState<string>('');
   const [txHash, setTxHash] = useState<string>();
@@ -23,15 +23,17 @@ export const SccBox: FC = () => {
   }
 
   const sellItem = async (amount: string, idx: number, sccId: string) => {
+    console.log(idx);
     try {
       const browserProvider = new ethers.BrowserProvider(provider);
       const signer = await browserProvider.getSigner();
       const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
       const tx = await sccContract.putOnSale(idx, ethers.parseEther(amount));
       await tx.wait();
+      console.log(tx.hash);
       setTxHash(tx.hash);
 
-      updateSCC({
+      putOnSaleSCC({
         sccId: sccId,
       });
     } catch (error: any) {
@@ -87,11 +89,6 @@ export const SccBox: FC = () => {
                   </InputGroup>
                   <Button onClick={() => sellItem(amount, idx, sccData.id_scc)} colorScheme='orange'>Sell</Button>
                 </Flex>
-                { txHash &&  
-                  <a href={`https://mumbai.polygonscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
-                      Tx hash : { trimString(txHash, 18) }
-                  </a>
-              }
               </Box>
             );
           })

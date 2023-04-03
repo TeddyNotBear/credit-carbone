@@ -27,7 +27,13 @@ export interface GetUCOByEmailArgs {
     onError?: (error: Error) => void;
 }
 
-export interface updateSCCArgs {
+export interface PutOnSaleSCCArgs {
+    sccId: string;
+    onSuccess?: (successCallbackData: any) => void;
+    onError?: (error: Error) => void;
+}
+
+export interface RemoveFromSaleSCCArgs {
     sccId: string;
     onSuccess?: (successCallbackData: any) => void;
     onError?: (error: Error) => void;
@@ -153,17 +159,17 @@ export const useVerif = () => {
     return { ...mutation, verif: mutation.mutate };
 };
 
-export const useUpdateSCC = () => {
+export const usePutOnSaleSCC = () => {
     const queryClient = useQueryClient();
 
     const mutation = useMutation<
         { message: string; mutationResult: any },
         Error,
-        updateSCCArgs
+        PutOnSaleSCCArgs
     >({
-       mutationFn: async ({ sccId }: updateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+       mutationFn: async ({ sccId }: PutOnSaleSCCArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
-            uri: `${URI}/scc/update`,
+            uri: `${URI}/scc/putOnSale`,
             method: methods.PUT,
             body: { sccId }
         }),
@@ -180,7 +186,37 @@ export const useUpdateSCC = () => {
         },
     });
 
-    return { ...mutation, updateSCC: mutation.mutate };
+    return { ...mutation, putOnSaleSCC: mutation.mutate };
+};
+
+export const useRemoveFromSaleCC = () => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation<
+        { message: string; mutationResult: any },
+        Error,
+        RemoveFromSaleSCCArgs
+    >({
+       mutationFn: async ({ sccId }: RemoveFromSaleSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+        fetchApi({
+            uri: `${URI}/scc/removeFromSale`,
+            method: methods.PUT,
+            body: { sccId }
+        }),
+        onSuccess: (data, { onSuccess }) => {
+            queryClient.invalidateQueries([URI]);
+            if (onSuccess) {
+                onSuccess(data);
+            }
+        },
+        onError: (error, { onError }) => {
+            if (onError) {
+                onError(error);
+            }
+        },
+    });
+
+    return { ...mutation, removeFromSaleSCC: mutation.mutate };
 };
 
 export const useGetSCCOnSale = () => {

@@ -75,13 +75,27 @@ router.post('/verif', async (req, res: express.Response) => {
     }
 });
 
-router.put('/scc/update', async (req, res: express.Response) => {
+router.put('/scc/putOnSale', async (req, res: express.Response) => {
     const sccId = req.body.sccId;
     if(!sccId) return res.status(500);
     
     try {
         const filter = { id_scc: sccId };
         const update = { onSale: true };
+        await SCC.findOneAndUpdate(filter, update, { new: true });
+        return res.status(200).send({ message: "Update successfully!"});
+    } catch (error) {
+        return res.status(400).send({ message: "" });
+    }
+});
+
+router.put('/scc/removeFromSale', async (req, res: express.Response) => {
+    const sccId = req.body.sccId;
+    if(!sccId) return res.status(500);
+    
+    try {
+        const filter = { id_scc: sccId };
+        const update = { onSale: false };
         await SCC.findOneAndUpdate(filter, update, { new: true });
         return res.status(200).send({ message: "Update successfully!"});
     } catch (error) {

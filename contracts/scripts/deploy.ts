@@ -6,6 +6,7 @@ async function main() {
     const scc_addresses = await deploy_scc();
     try {
         await verify(uco_addresses.implementation, []);
+        await verify(scc_addresses.implementation, []);
     } catch (e) {}
 }
 
@@ -36,7 +37,7 @@ async function deploy_scc() {
     console.log('Deploying SCC contract...');
     const scc = await upgrades.deployProxy(
         SCC,
-        [],
+        ['ipfs/'],
         { initializer: 'initialize'}
     );
     await scc.deployed();

@@ -1,11 +1,36 @@
 import { Badge, Box, Button, Flex, Grid, Image, Text, InputGroup, InputLeftElement } from "@chakra-ui/react";
+import { Contract, ethers } from "ethers";
 import { FC, useEffect } from "react";
-import { useGetSCCOnSale } from '../api/file';
+import { SCC_ABI } from "../abi";
+import { useGetSCCOnSale, useRemoveFromSaleCC } from '../api/file';
 import { SCCLogo } from '../assets';
+import { SCC_PROXY_CONTRACT_ADDRESS } from "../constants/addresses";
+import { useWeb3Auth } from "../hooks/useWeb3Auth";
 import { ISCC } from "../types/SCC";
 
 const MarketplaceView: FC = () => {
     const { sccsData, isLoading, isError } = useGetSCCOnSale();
+    const { removeFromSaleSCC } = useRemoveFromSaleCC();
+    const { provider } = useWeb3Auth();
+    
+    const removeItem = async (idx: number, sccId: string) => {
+        console.log(idx);
+        console.log(sccId);
+        try {
+          const browserProvider = new ethers.BrowserProvider(provider);
+          const signer = await browserProvider.getSigner();
+          const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
+          const tx = await sccContract.removeFromSale(idx);
+          await tx.wait();
+          console.log(tx.hash);
+    
+          removeFromSaleSCC({
+            sccId: sccId,
+          });
+        } catch (error: any) {
+          console.error(error);
+        }
+      }
 
     return (
         <>
@@ -48,8 +73,9 @@ const MarketplaceView: FC = () => {
                             linked to uco n°{sccData.scc_uco_id}
                             </Box>
                         </Box>
-                        <Flex p='6'>
+                        <Flex p='6' gap={2}>
                             <Button colorScheme='orange'>Buy</Button>
+                            <Button onClick={() => removeItem(idx, sccData.id_scc)} colorScheme='red'>Remove</Button>
                         </Flex>
                     </Box>
                     );

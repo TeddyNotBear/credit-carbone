@@ -1,3 +1,4 @@
+import { UCO } from './../../../contracts/typechain-types/contracts/UCO';
 import { FileController } from './../controllers/file.controller.js';
 import express from "express";
 import { SCC } from '../models/scc.model.js';

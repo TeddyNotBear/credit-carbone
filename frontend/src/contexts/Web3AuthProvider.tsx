@@ -1,4 +1,3 @@
-import { SafeEventEmitterProvider, UserInfo } from '@web3auth/base';
 import { Web3Auth } from '@web3auth/modal';
 import {
   FC,
@@ -8,12 +7,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-
-import {
-  Balance,
-  TickerAddressesMapping,
-  TickerInfoMap,
-} from '../constants/ticker';
 import { DEFAULT_NETWORK, Network, NetworkConfig } from '../constants/web3';
 import { RPC } from '../types/rpc/RPC';
 

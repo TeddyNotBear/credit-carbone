@@ -6,7 +6,6 @@ import { create } from 'ipfs-core';
 export class FileController {
 
     public async generateJsonFiles(jsonData: Array<any>, type: string, userEmail: string) {
-        console.log(jsonData);
         jsonData.map((data: any) => {
             if(type === 'UCO') this.createUCOInDB(data, userEmail);
             if(type === 'SCC') this.createSCCInDB(data, userEmail);
@@ -14,20 +13,27 @@ export class FileController {
     }
 
     public async createUCOInDB(data: IUCO, userEmail: string) {
-        console.log('data', data)
-        const uco: IUCO = new UCO({
-            ...data,
-            uploadedBy: userEmail
-        });
-        await uco.save();
+        try {   
+            const uco: IUCO = new UCO({
+                ...data,
+                uploadedBy: userEmail
+            });
+            await uco.save();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     public async createSCCInDB(data: ISCC, userEmail: string) {
-        const scc: ISCC = new SCC({
-            ...data,
-            uploadedBy: userEmail
-        });
-        await scc.save();
+        try {
+            const scc: ISCC = new SCC({
+                ...data,
+                uploadedBy: userEmail
+            });
+            await scc.save(); 
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     public async getUserUCO(userEmail: string) {

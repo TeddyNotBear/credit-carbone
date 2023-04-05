@@ -21,6 +21,7 @@ contract SCC is
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => string) public cidOfTokenId;
     mapping(uint256 => bool) private _totalSupply;
+    mapping(address => uint256[]) private pendingBalance;
 
     uint256[] public onSaleTokenIds;
 
@@ -58,10 +59,12 @@ contract SCC is
             _totalSupply[i] = true;
             _setURI(sccCounter.current(), cidArr[i]);
             sccCounter.increment();
+            pendingBalance[msg.sender].push(i);
         }
         
         // Replace to mint on Admin's address
         _mintBatch(address(this), sccIdArr, amountArr, '');
+
         // add mapping msg.sender[id] pendingBalance
     }
 
@@ -89,6 +92,10 @@ contract SCC is
 
     // Allow everyone to buy a SCC
     function buy(uint256 tokenId) external payable {
+        require(msg.value == getTokenPrice(tokenId));
+        require(pendingBalance[msg.sender][tokenId] == msg.sender);
+
+        
         // Make msg.sender payable in order to let it send ether
     }
 

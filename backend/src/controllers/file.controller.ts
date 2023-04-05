@@ -1,7 +1,7 @@
 import { UCO, IUCO } from './../models/uco.model.js';
 import { SCC, ISCC } from './../models/scc.model.js';
 
-import { create } from 'ipfs-core';
+import { create } from 'ipfs-http-client';
 
 export class FileController {
 
@@ -69,21 +69,31 @@ export class FileController {
         return isValid;
     }
 
-    public async uploadToIPFS(jsonData: Array<string>) {
-        const node = await create({ repo: "Credit-Carbone" + Math.random() });
+    public async uploadToIPFS(jsonData: Array<any>) {
+        const auth = 'Basic ' + Buffer.from(process.env["INFURA_PROJECT_ID"] + ':' + process.env["INFURA_SECRET_KEY"]).toString('base64');
+        const ipfs = await create({
+            host: 'ipfs.infura.io',
+            port: 5001,
+            protocol: 'https',
+            headers: {
+                authorization: auth,
+            },
+        });
 
         let ipfsHashArr: Array<string> = [];
         if(jsonData && jsonData.length > 0) {
             for(const json in jsonData) {
-                const fileAdded = await node.add({ content: JSON.stringify(jsonData[json]) });
-                if(fileAdded) {
-                    ipfsHashArr.push(fileAdded.path)
-                }
+                const content = JSON.stringify(jsonData[json]);
+                await ipfs.add(content).then(result => {
+                    ipfsHashArr.push(result.cid.toString());
+                }).catch(error => {
+                    console.error(error);
+                });
             }
         }
         
-        await node.stop();
-        
+        // await ipfs.stop();
+
         return ipfsHashArr;
     }
 

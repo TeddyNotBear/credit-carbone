@@ -61,7 +61,8 @@ contract SCC is
         }
         
         // Replace to mint on Admin's address
-        _mintBatch(msg.sender, sccIdArr, amountArr, '');
+        _mintBatch(address(this), sccIdArr, amountArr, '');
+        // add mapping msg.sender[id] pendingBalance
     }
 
     // Allow smart-contract's admin to put a SCC on sale

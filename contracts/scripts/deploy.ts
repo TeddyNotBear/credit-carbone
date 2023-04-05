@@ -2,10 +2,10 @@ import { ethers, network, upgrades } from "hardhat";
 import { verify } from './utils/verify';
 
 async function main() {
-    const uco_addresses = await deploy_uco();
+    //const uco_addresses = await deploy_uco();
     const scc_addresses = await deploy_scc();
     try {
-        await verify(uco_addresses.implementation, []);
+        //await verify(uco_addresses.implementation, []);
         await verify(scc_addresses.implementation, []);
     } catch (e) {}
 }

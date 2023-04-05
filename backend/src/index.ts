@@ -1,11 +1,7 @@
 import express, { Express } from "express";
-// import bodyParser from "body-parser";
 import { buildRoutes } from "./routes/index.js";
 
 import mongoose from 'mongoose';
-// import cors from 'cors';
-// const cors = require('cors')
-// const path = require("path");
 const app: Express = express();
 
 import { config } from "dotenv";
@@ -20,12 +16,6 @@ try {
 
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ limit: '25mb', extended: true }));
-
-// const allowedOrigins = ['http://localhost:3000'];
-// const options: cors.CorsOptions = {
-//    origin: allowedOrigins
-// };
-// app.use(cors(options));
 
 buildRoutes(app);
 

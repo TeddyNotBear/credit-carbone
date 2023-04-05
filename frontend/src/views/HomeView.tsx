@@ -19,4 +19,3 @@ const HomeView: FC = () => {
 }
 
 export default HomeView;
-

@@ -1,6 +1,6 @@
-import { Badge, Box, Button, Flex, Grid, Image, Text, InputGroup, InputLeftElement } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Grid, Image } from "@chakra-ui/react";
 import { Contract, ethers } from "ethers";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { SCC_ABI } from "../abi";
 import { useGetSCCOnSale, useRemoveFromSaleCC } from '../api/file';
 import { SCCLogo } from '../assets';
@@ -9,7 +9,7 @@ import { useWeb3Auth } from "../hooks/useWeb3Auth";
 import { ISCC } from "../types/SCC";
 
 const MarketplaceView: FC = () => {
-    const { sccsData, isLoading, isError } = useGetSCCOnSale();
+    const { sccsData } = useGetSCCOnSale();
     const { removeFromSaleSCC } = useRemoveFromSaleCC();
     const { provider } = useWeb3Auth();
     

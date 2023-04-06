@@ -23,6 +23,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const [callbackMessage, setCallbackMessage] = useState<string>();
     const [ipfsHashes, setIpfsHashes] = useState<[]>();
     const [ipfsLoading, setIpfsLoading] = useState<any>(false);
+    const [mintLoading, setMintLoading] = useState<any>(false);
     const [txHash, setTxHash] = useState<string>();
 
     const { provider } = useWeb3Auth();
@@ -32,7 +33,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const { userInfo } = useWeb3Auth();
 
     const mint = async () => {
-        console.log(ipfsHashes);
+        console.log('Upload Box :', ipfsHashes);
         try {
             if(ipfsHashes) {
                 const browserProvider = new ethers.BrowserProvider(provider);
@@ -42,12 +43,13 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                     const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
                     tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
                 } else if(type === 'SCC') {
+                    console.log('SCC');
                     const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
                     tx = await sccContract.mint(ipfsHashes.length, ipfsHashes);
                 }
-                setIpfsLoading(true);
+                setMintLoading(true);
                 await tx.wait();
-                setIpfsLoading(false);
+                setMintLoading(false);
                 setTxHash(tx.hash);
             }
         } catch (err) {
@@ -173,10 +175,20 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
             <ButtonGroup gap='1' pt={4}>
                 {
                     type && type === 'UCO'
-                    ? <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
+                    ? !ipfsLoading
+                        ? <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
+                        : <Button 
+                            isLoading 
+                            loadingText='Uploading...' 
+                            colorScheme='green'
+                            variant='outline'
+                            spinnerPlacement='start'
+                        >
+                            Upload
+                        </Button> 
                     : <Button onClick={onOpen} colorScheme='green'>Upload</Button>
                 }
-                { !ipfsLoading 
+                { !mintLoading 
                     ? <Button onClick={mint} colorScheme='orange'>Mint</Button>
                     : <Button 
                         isLoading 

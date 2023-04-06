@@ -34,6 +34,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
     const { verif } = useVerif();
 
     const uploadToIPFSSuccess = (callbackData: any) => {
+        console.log(callbackData);
         { setSuccess(true); }
         { setCallbackMessage(callbackData.message); }
         { setIpfsHashes(callbackData.data); }
@@ -43,15 +44,17 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
 
     const verifSuccess = async (callbackData: any) => {
         setIfVerif(callbackData.message);
-        console.log('success :', jsonData);
-        await handleUpload(jsonData);
-        await handleUploadInDB(jsonData);
+        if(callbackData.message) {
+            console.log('TRUE');
+            await handleUpload(jsonData);
+            await handleUploadInDB(jsonData);
+        }
+        console.log('FALSE');
     };
 
     const verifError = () => {};
 
     const handleUploadInDB = useCallback(async (jsonData: any) => {
-        console.log('upload in db :', jsonData);
         if(jsonData) {
             upload({
                 jsonData: jsonData,
@@ -62,7 +65,6 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
     }, [jsonData, userInfo]);
 
     const handleVerif = useCallback(async () => {
-        console.log('verif :', jsonData);
         if(jsonData) {
             verif({
                 jsonData: jsonData,
@@ -74,7 +76,6 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
     }, [jsonData, userInfo]);
 
     const handleUpload = useCallback(async (jsonData: any) => {
-        console.log('upload :', jsonData);
         if(jsonData) {
             setIpfsLoading(true);
             uploadToIPFS({

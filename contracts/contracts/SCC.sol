@@ -8,6 +8,8 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+import "hardhat/console.sol";
+
 contract SCC is 
     ERC1155URIStorageUpgradeable, 
     OwnableUpgradeable, 
@@ -17,28 +19,31 @@ contract SCC is
     using Counters for Counters.Counter;
     Counters.Counter private sccCounter;
 
+    address private admin;
+
     mapping(uint256 => bool) public onSale;
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => string) public cidOfTokenId;
     mapping(uint256 => bool) private _totalSupply;
-    mapping(address => uint256[]) private pendingBalance;
+    mapping(address => mapping(uint256 => uint256)) private _pendingBalance;
 
     uint256[] public onSaleTokenIds;
 
     event PutOnSale(uint256 _tokenId, uint256 _price);
 
-    function initialize(string memory _baseTokenURI) public initializer {
+    function initialize(string memory _baseTokenURI, address _admin) public initializer {
         __ERC1155URIStorage_init();
         __Ownable_init();
         __ReentrancyGuard_init();
         _setBaseURI(_baseTokenURI);
+        admin = _admin;
     }
 
     function getOnSaleTokenIds() external view returns (uint256[] memory) {
         return onSaleTokenIds;
     }
 
-    function getTokenPrice(uint256 tokenId) external view returns (uint256) {
+    function getTokenPrice(uint256 tokenId) public view returns (uint256) {
         return tokenPrice[tokenId];
     }
 
@@ -57,21 +62,20 @@ contract SCC is
             sccIdArr[i] = sccCounter.current();
             amountArr[i] = 1;
             _totalSupply[i] = true;
+            _pendingBalance[msg.sender][i] = 1;
             _setURI(sccCounter.current(), cidArr[i]);
             sccCounter.increment();
-            pendingBalance[msg.sender].push(i);
         }
-        
-        // Replace to mint on Admin's address
-        _mintBatch(address(this), sccIdArr, amountArr, '');
 
-        // add mapping msg.sender[id] pendingBalance
+        // Replace to mint on Admin's address
+        _mintBatch(admin, sccIdArr, amountArr, '');
     }
 
     // Allow smart-contract's admin to put a SCC on sale
     function putOnSale(uint256 tokenId, uint256 price) external {
         require(exists(tokenId), "SCC does not exists.");
-        require(balanceOf(msg.sender, tokenId) == 1, "You must owns the SCC to sell it.");
+        require(balanceOf(admin, tokenId) == 1, "Admin must owns your SCC to sell it.");
+        require(_pendingBalance[msg.sender][tokenId] == 1, "You must owns the SCC to sell it.");
         require(price > 0, "Price must be greater than 0.");
 
         onSale[tokenId] = true;
@@ -83,7 +87,8 @@ contract SCC is
 
     function removeFromSale(uint256 tokenId) external {
         require(exists(tokenId), "SCC does not exists.");
-        require(balanceOf(msg.sender, tokenId) == 1, "You must owns the SCC to sell it.");
+        require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
+        require(_pendingBalance[msg.sender][tokenId] == 1, "You must owns the SCC to sell it.");
 
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;
@@ -91,11 +96,12 @@ contract SCC is
     }
 
     // Allow everyone to buy a SCC
-    function buy(uint256 tokenId) external payable {
-        require(msg.value == getTokenPrice(tokenId));
-        require(pendingBalance[msg.sender][tokenId] == msg.sender);
+    function buy(uint256 tokenId, address seller) external payable {
+        // require(msg.value == getTokenPrice(tokenId));
+        // Check that seller is owner
+        // require(pendingBalance[seller][tokenId] == 1);
 
-        
+        // safeTransferFrom(address(this), msg.sender, tokenId, 1, '');
         // Make msg.sender payable in order to let it send ether
     }
 

@@ -2,10 +2,10 @@ import { ethers, network, upgrades } from "hardhat";
 import { verify } from './utils/verify';
 
 async function main() {
-    //const uco_addresses = await deploy_uco();
+    const uco_addresses = await deploy_uco();
     const scc_addresses = await deploy_scc();
     try {
-        //await verify(uco_addresses.implementation, []);
+        await verify(uco_addresses.implementation, []);
         await verify(scc_addresses.implementation, []);
     } catch (e) {}
 }
@@ -37,7 +37,7 @@ async function deploy_scc() {
     console.log('Deploying SCC contract...');
     const scc = await upgrades.deployProxy(
         SCC,
-        ['ipfs/'],
+        ['ipfs/', '0xC5B4F2A7Ea7F675Fca6EF734d6F06FFB40dFC93F'],
         { initializer: 'initialize'}
     );
     await scc.deployed();

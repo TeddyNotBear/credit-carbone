@@ -1,6 +1,8 @@
 import { FileController } from './../controllers/file.controller.js';
 import express from "express";
 import { SCC } from '../models/scc.model.js';
+import { corporateMiddleware } from '../middleware/access.middleware.js';
+import { User } from '../models/user.model.js';
 
 const router = express.Router();
 
@@ -13,9 +15,9 @@ router.use(function(_req: any, res: express.Response, next) {
 
 router.post('/upload', async (req: any, res: express.Response) => {
     try {
+        const email = req.body.email;
         const jsonData = req.body.jsonData;
         const type = req.body.type;
-        const email = req.body.email;
         
         if(jsonData) {
             const fileController = new FileController();
@@ -67,6 +69,8 @@ router.post('/verif', async (req, res: express.Response) => {
             const fileController = new FileController();
             const userUCOs = await fileController.getUserUCO(email);
             const isValid: boolean = await fileController.ownershipVerification(userUCOs, jsonData);
+            console.log(isValid);
+            if(isValid) await fileController.updateUCORetirementStatus(jsonData);
 
             return res.status(200).send({ message: isValid });
         }

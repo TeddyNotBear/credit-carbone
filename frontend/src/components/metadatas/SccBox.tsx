@@ -8,7 +8,6 @@ import { Contract, ethers } from "ethers";
 import { useWeb3Auth } from "../../hooks/useWeb3Auth";
 import { SCC_PROXY_CONTRACT_ADDRESS } from "../../constants/addresses";
 import { SCC_ABI } from "../../abi";
-import { trimString } from "../../utils/trimString";
 
 export const SccBox: FC = () => {
   const { sccsData, isLoading, isError } = useGetSCCByEmail();

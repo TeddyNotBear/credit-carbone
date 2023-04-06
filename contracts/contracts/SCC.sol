@@ -100,14 +100,14 @@ contract SCC is
 
     // Allow everyone to buy a SCC
     function buy(uint256 tokenId) external payable {
-        require(msg.value == getTokenPrice(tokenId), "Price mismatches");
+        // require(msg.value == getTokenPrice(tokenId), "Price mismatches");
         require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
-        
+
         // change pending balance owner
 
-        address payable seller = sellers[tokenId];
-        (bool success, ) = seller.call{value: msg.value}('');
-        require(success, "Failed to send Ether");
+        // address payable seller = sellers[tokenId];
+        // (bool success, ) = seller.call{value: msg.value}('');
+        // require(success, "Failed to send Ether");
 
         // Reset price
         onSale[tokenId] = false;

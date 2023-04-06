@@ -23,6 +23,7 @@ contract UCO is ERC721AUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         __ReentrancyGuard_init();
     }
 
+    // add address in params
     function mint(uint256 quantity, string[] memory cidArr) external payable nonReentrant {
         _safeMint(msg.sender, quantity, '');
 

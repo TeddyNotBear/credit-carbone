@@ -69,6 +69,15 @@ export class FileController {
         return isValid;
     }
 
+    public async updateUCORetirementStatus(jsonData: Array<any>) {
+        jsonData.forEach(async (scc: ISCC) => {
+            const filter = { id_uco: scc.scc_uco_id };
+            const update = { uco_retirement_status: 'Retired' };
+            console.log(scc.scc_uco_id);
+            await UCO.findOneAndUpdate(filter, update, { new: true });
+        });
+    }
+
     public async uploadToIPFS(jsonData: Array<any>) {
         const auth = 'Basic ' + Buffer.from(process.env["INFURA_PROJECT_ID"] + ':' + process.env["INFURA_SECRET_KEY"]).toString('base64');
         const ipfs = await create({

@@ -24,7 +24,7 @@ contract SCC is
     mapping(uint256 => bool) public onSale;
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => string) public cidOfTokenId;
-    mapping(uint256 => address payable) public sellers;
+    mapping(uint256 => address) public sellers;
     mapping(uint256 => bool) private _totalSupply;
     mapping(address => mapping(uint256 => uint256)) public _pendingBalance;
 
@@ -55,7 +55,7 @@ contract SCC is
         return false;
     }
 
-    function mint(uint256 quantity, string[] memory cidArr) external {
+    function mint(address owner, uint256 quantity, string[] memory cidArr) external {
         uint256[] memory sccIdArr = new uint[](quantity);
         uint256[] memory amountArr = new uint[](quantity);
         uint256 currentTokenId = sccCounter.current();
@@ -63,35 +63,33 @@ contract SCC is
             sccIdArr[i] = sccCounter.current();
             amountArr[i] = 1;
             _totalSupply[i] = true;
-            _pendingBalance[msg.sender][i] = 1;
+            _pendingBalance[owner][i] = 1;
             _setURI(sccCounter.current(), cidArr[i]);
             sccCounter.increment();
         }
 
-        // Replace to mint on Admin's address
         _mintBatch(admin, sccIdArr, amountArr, '');
     }
 
     // Allow smart-contract's admin to put a SCC on sale
-    function putOnSale(uint256 tokenId, uint256 price) external {
+    function putOnSale(address owner, uint256 tokenId, uint256 price) external {
         require(exists(tokenId), "SCC does not exists.");
         require(balanceOf(admin, tokenId) == 1, "Admin must owns your SCC to sell it.");
-        require(_pendingBalance[msg.sender][tokenId] == 1, "You must owns the SCC to sell it.");
+        require(_pendingBalance[owner][tokenId] == 1, "You must owns the SCC to sell it.");
         require(price > 0, "Price must be greater than 0.");
 
         onSale[tokenId] = true;
         tokenPrice[tokenId] = price;
-        // store pending seller
-        sellers[tokenId] = payable(msg.sender);
+        sellers[tokenId] = owner;
         onSaleTokenIds.push(tokenId);
 
         emit PutOnSale(tokenId, price);
     }
 
-    function removeFromSale(uint256 tokenId) external {
+    function removeFromSale(address owner, uint256 tokenId) external {
         require(exists(tokenId), "SCC does not exists.");
         require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
-        require(_pendingBalance[msg.sender][tokenId] == 1, "You must owns the SCC to sell it.");
+        require(_pendingBalance[owner][tokenId] == 1, "You must owns the SCC to sell it.");
 
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;
@@ -99,15 +97,10 @@ contract SCC is
     }
 
     // Allow everyone to buy a SCC
-    function buy(uint256 tokenId) external payable {
-        // require(msg.value == getTokenPrice(tokenId), "Price mismatches");
+    function buy(address owner, uint256 tokenId) external {
         require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
 
-        // change pending balance owner
-
-        // address payable seller = sellers[tokenId];
-        // (bool success, ) = seller.call{value: msg.value}('');
-        // require(success, "Failed to send Ether");
+        safeTransferFrom(admin, owner, tokenId, 1, '');
 
         // Reset price
         onSale[tokenId] = false;

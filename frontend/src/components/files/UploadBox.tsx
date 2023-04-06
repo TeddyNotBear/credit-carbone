@@ -26,7 +26,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const [mintLoading, setMintLoading] = useState<any>(false);
     const [txHash, setTxHash] = useState<string>();
 
-    const { provider } = useWeb3Auth();
+    const { provider, address } = useWeb3Auth();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { uploadToIPFS } = useUploadToIPFS();
     const { upload } = useUpload();
@@ -41,11 +41,11 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 let tx;
                 if(type === 'UCO') {
                     const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
-                    tx = await ucoContract.mint(ipfsHashes.length, ipfsHashes);
+                    tx = await ucoContract.mint(address, ipfsHashes.length, ipfsHashes);
                 } else if(type === 'SCC') {
                     console.log('SCC');
                     const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-                    tx = await sccContract.mint(ipfsHashes.length, ipfsHashes);
+                    tx = await sccContract.mint(address, ipfsHashes.length, ipfsHashes);
                 }
                 setMintLoading(true);
                 await tx.wait();

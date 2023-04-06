@@ -11,7 +11,7 @@ import { SCC_ABI } from "../../abi";
 
 export const SccBox: FC = () => {
   const { sccsData, isLoading, isError } = useGetSCCByEmail();
-  const { provider } = useWeb3Auth();
+  const { provider, address } = useWeb3Auth();
   const { putOnSaleSCC } = usePutOnSaleSCC();
 
   const [amount, setAmount] = useState<string>('');
@@ -28,7 +28,7 @@ export const SccBox: FC = () => {
       const browserProvider = new ethers.BrowserProvider(provider);
       const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
       const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-      const tx = await sccContract.putOnSale(idx, ethers.parseEther(amount));
+      const tx = await sccContract.putOnSale(address, idx, ethers.parseEther(amount));
       setSellLoadingLoading(true);
       await tx.wait();
       setSellLoadingLoading(false);

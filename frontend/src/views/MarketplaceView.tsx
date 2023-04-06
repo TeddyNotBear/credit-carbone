@@ -11,15 +11,15 @@ import { ISCC } from "../types/SCC";
 const MarketplaceView: FC = () => {
     const { sccsData } = useGetSCCOnSale();
     const { removeFromSaleSCC } = useRemoveFromSaleCC();
-    const { provider } = useWeb3Auth();
+    const { provider, address } = useWeb3Auth();
     const [buyLoading, setBuyLoadingLoading] = useState<any>(false);
     
     const removeItem = async (idx: number, sccId: string) => {
         try {
           const browserProvider = new ethers.BrowserProvider(provider);
-          const signer = await browserProvider.getSigner();
+          const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
           const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-          const tx = await sccContract.removeFromSale(idx);
+          const tx = await sccContract.removeFromSale(address, idx);
           await tx.wait();
           console.log(tx.hash);
     
@@ -36,12 +36,10 @@ const MarketplaceView: FC = () => {
         console.log(sccId);
         try {
             const browserProvider = new ethers.BrowserProvider(provider);
-            const signer = await browserProvider.getSigner();
+            const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
             const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-            const price = await sccContract.getTokenPrice(idx);
-            console.log(price);
             setBuyLoadingLoading(true);
-            await sccContract.buy(idx, { value: price });
+            await sccContract.buy(address, idx);
             setBuyLoadingLoading(false);
         } catch (error: any) {
             console.error(error);

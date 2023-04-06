@@ -26,7 +26,7 @@ export const SccBox: FC = () => {
     console.log(idx);
     try {
       const browserProvider = new ethers.BrowserProvider(provider);
-      const signer = await browserProvider.getSigner();
+      const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
       const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
       const tx = await sccContract.putOnSale(idx, ethers.parseEther(amount));
       setSellLoadingLoading(true);

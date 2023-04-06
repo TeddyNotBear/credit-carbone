@@ -37,7 +37,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
         try {
             if(ipfsHashes) {
                 const browserProvider = new ethers.BrowserProvider(provider);
-                const signer = await browserProvider.getSigner();
+                const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
                 let tx;
                 if(type === 'UCO') {
                     const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
@@ -97,6 +97,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 const sheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[sheetName];
                 const json = XLSX.utils.sheet_to_json(worksheet);
+                console.log("test", json);
                 setJsonData(json);
             }
             reader.readAsArrayBuffer(event.target.files[0]);

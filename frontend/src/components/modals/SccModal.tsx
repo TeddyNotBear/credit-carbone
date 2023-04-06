@@ -49,6 +49,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
             await handleUpload(jsonData);
             await handleUploadInDB(jsonData);
         }
+        alert("Vous n'êtes pas en possession de certains UCO");
         console.log('FALSE');
     };
 

@@ -42,7 +42,7 @@ const ProfileView: FC = () => {
                 />
                 <Heading fontSize={'2xl'} fontFamily={'body'}>{ userInfo.email }</Heading>
                 <Text fontWeight={600} color={'gray.500'} mb={4}>
-                    { address && trimString(address, 12) }
+                    { address && address }
                 </Text>
                 <Text textAlign={'center'} color={useColorModeValue('gray.700', 'gray.400')} py={3} mb={4}>
                     { localStorage.getItem('role') && localStorage.getItem('role') }

@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex, Grid, Image, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Grid, Image, Input, InputGroup, InputLeftElement, Text } from "@chakra-ui/react";
 import { FC, useState } from "react";
 import { ISCC } from "../../types/SCC";
 
@@ -17,6 +17,7 @@ export const SccBox: FC = () => {
 
   const [amount, setAmount] = useState<string>('');
   const [txHash, setTxHash] = useState<string>();
+  const [sellLoading, setSellLoadingLoading] = useState<any>(false);
 
   const handleAmount = (e: any) => {
     setAmount(e.target.value);
@@ -29,7 +30,9 @@ export const SccBox: FC = () => {
       const signer = await browserProvider.getSigner();
       const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
       const tx = await sccContract.putOnSale(idx, ethers.parseEther(amount));
+      setSellLoadingLoading(true);
       await tx.wait();
+      setSellLoadingLoading(false);
       console.log(tx.hash);
       setTxHash(tx.hash);
 
@@ -83,11 +86,31 @@ export const SccBox: FC = () => {
                     </Box>
                 </Box>
                 <Flex p='6'>
-                  <InputGroup pr={2} >
-                    <InputLeftElement pointerEvents='none' color='gray.300' fontSize='1.2em' children='$' />
-                    <Input onChange={(e: any) => handleAmount(e)} placeholder='Enter amount' />
-                  </InputGroup>
-                  <Button onClick={() => sellItem(amount, idx, sccData.id_scc)} colorScheme='orange'>Sell</Button>
+                  {
+                    !sccData.onSale
+                    ? <InputGroup pr={2} >
+                        <InputLeftElement pointerEvents='none' color='gray.300' fontSize='1.2em' children='$' />
+                        <Input onChange={(e: any) => handleAmount(e)} placeholder='Enter amount' />
+                      </InputGroup>
+                    : <Box>Already on sale</Box>
+                  }
+                  {
+                    !sellLoading
+                    ? !sccData.onSale
+                      ? <Button onClick={() => sellItem(amount, idx, sccData.id_scc)} colorScheme='orange'>Sell</Button>
+                      : <></>
+                    : !sccData.onSale
+                      ? <Button 
+                          isLoading 
+                          loadingText='Selling...' 
+                          colorScheme='orange'
+                          variant='outline'
+                          spinnerPlacement='start'
+                        >
+                          Sell
+                        </Button> 
+                      : <></>
+                  }
                 </Flex>
               </Box>
             );

@@ -1,6 +1,6 @@
 import { Badge, Box, Button, Flex, Grid, Image } from "@chakra-ui/react";
 import { Contract, ethers } from "ethers";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { SCC_ABI } from "../abi";
 import { useGetSCCOnSale, useRemoveFromSaleCC } from '../api/file';
 import { SCCLogo } from '../assets';
@@ -12,6 +12,7 @@ const MarketplaceView: FC = () => {
     const { sccsData } = useGetSCCOnSale();
     const { removeFromSaleSCC } = useRemoveFromSaleCC();
     const { provider } = useWeb3Auth();
+    const [buyLoading, setBuyLoadingLoading] = useState<any>(false);
     
     const removeItem = async (idx: number, sccId: string) => {
         try {
@@ -39,7 +40,9 @@ const MarketplaceView: FC = () => {
             const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
             const price = await sccContract.getTokenPrice(idx);
             console.log(price);
-
+            setBuyLoadingLoading(true);
+            await sccContract.buy(idx, { value: price });
+            setBuyLoadingLoading(false);
         } catch (error: any) {
             console.error(error);
         }
@@ -87,7 +90,19 @@ const MarketplaceView: FC = () => {
                                 </Box>
                             </Box>
                             <Flex p='6' gap={2}>
-                                <Button onClick={() => buyItem(idx, sccData.id_scc) } colorScheme='orange'>Buy</Button>
+                                {
+                                    !buyLoading
+                                    ? <Button onClick={() => buyItem(idx, sccData.id_scc) } colorScheme='orange'>Buy</Button>
+                                    : <Button 
+                                        isLoading 
+                                        loadingText='Buying...' 
+                                        colorScheme='orange'
+                                        variant='outline'
+                                        spinnerPlacement='start'
+                                    >
+                                        Buy
+                                    </Button> 
+                                }
                                 <Button onClick={() => removeItem(idx, sccData.id_scc)} colorScheme='red'>Remove</Button>
                             </Flex>
                         </Box>

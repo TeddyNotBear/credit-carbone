@@ -62,6 +62,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
         setSuccess(true);
         setCallbackMessage(callbackData.message);
         setIpfsHashes(callbackData.data);
+        setIpfsLoading(false);
         console.log(callbackData.data);
         if(jsonData) {
             upload({
@@ -83,7 +84,6 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 onSuccess: uploadToIPFSSuccess,
                 onError: uploadToIPFSError,
             });
-            setIpfsLoading(false);
         }
     }, [jsonData]);
 
@@ -175,7 +175,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
             <ButtonGroup gap='1' pt={4}>
                 {
                     type && type === 'UCO'
-                    ? !ipfsLoading
+                    ? !ipfsLoading 
                         ? <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
                         : <Button 
                             isLoading 

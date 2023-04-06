@@ -24,8 +24,9 @@ contract SCC is
     mapping(uint256 => bool) public onSale;
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => string) public cidOfTokenId;
+    mapping(uint256 => address payable) public sellers;
     mapping(uint256 => bool) private _totalSupply;
-    mapping(address => mapping(uint256 => uint256)) private _pendingBalance;
+    mapping(address => mapping(uint256 => uint256)) public _pendingBalance;
 
     uint256[] public onSaleTokenIds;
 
@@ -80,6 +81,8 @@ contract SCC is
 
         onSale[tokenId] = true;
         tokenPrice[tokenId] = price;
+        // store pending seller
+        sellers[tokenId] = payable(msg.sender);
         onSaleTokenIds.push(tokenId);
 
         emit PutOnSale(tokenId, price);
@@ -96,13 +99,20 @@ contract SCC is
     }
 
     // Allow everyone to buy a SCC
-    function buy(uint256 tokenId, address seller) external payable {
-        // require(msg.value == getTokenPrice(tokenId));
-        // Check that seller is owner
-        // require(pendingBalance[seller][tokenId] == 1);
+    function buy(uint256 tokenId) external payable {
+        require(msg.value == getTokenPrice(tokenId), "Price mismatches");
+        require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
+        
+        // change pending balance owner
 
-        // safeTransferFrom(address(this), msg.sender, tokenId, 1, '');
-        // Make msg.sender payable in order to let it send ether
+        address payable seller = sellers[tokenId];
+        (bool success, ) = seller.call{value: msg.value}('');
+        require(success, "Failed to send Ether");
+
+        // Reset price
+        onSale[tokenId] = false;
+        tokenPrice[tokenId] = 0;
+        _remove(tokenId);
     }
 
     // Function to receive Ether. msg.data must be empty

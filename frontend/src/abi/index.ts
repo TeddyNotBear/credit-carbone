@@ -899,25 +899,6 @@ export const SCC_ABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "cidOfTokenId",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
       }
@@ -955,6 +936,19 @@ export const SCC_ABI = [
       }
     ],
     "name": "getTokenPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTotalSupply",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1362,4 +1356,4 @@ export const SCC_ABI = [
     "stateMutability": "payable",
     "type": "receive"
   }
-];
+]

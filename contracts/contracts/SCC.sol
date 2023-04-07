@@ -41,6 +41,10 @@ contract SCC is
         admin = _admin;
     }
 
+    function getTotalSupply() public view returns (uint256) {
+        return sccCounter.current();
+    }
+
     function getOnSaleTokenIds() external view returns (uint256[] memory) {
         return onSaleTokenIds;
     }

@@ -107,6 +107,20 @@ router.put('/scc/removeFromSale', async (req, res: express.Response) => {
     }
 });
 
+router.put('/scc/compensate', async (req, res: express.Response) => {
+    const sccId = req.body.sccId;
+    if(!sccId) return res.status(500);
+    
+    try {
+        const filter = { id_scc: sccId };
+        const update = { scc_retirement_status: 'Compensate' };
+        await SCC.findOneAndUpdate(filter, update, { new: true });
+        return res.status(200).send({ message: "Update successfully!"});
+    } catch (error) {
+        return res.status(400).send({ message: "" });
+    }
+});
+
 router.get('/uco/user/:userEmail', async (req, res: express.Response) => {
     const userEmail = req.params['userEmail'];
     if(!userEmail) return res.status(500).send({ message: "Please enter an email!"});

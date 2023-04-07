@@ -39,6 +39,12 @@ export interface RemoveFromSaleSCCArgs {
     onError?: (error: Error) => void;
 }
 
+export interface CompensateSCCArgs {
+    sccId: string;
+    onSuccess?: (successCallbackData: any) => void;
+    onError?: (error: Error) => void;
+}
+
 const URI = '/api/file';
 
 export const useGetUCOByEmail = () => {
@@ -189,7 +195,7 @@ export const usePutOnSaleSCC = () => {
     return { ...mutation, putOnSaleSCC: mutation.mutate };
 };
 
-export const useRemoveFromSaleCC = () => {
+export const useRemoveFromSaleSCC = () => {
     const queryClient = useQueryClient();
 
     const mutation = useMutation<
@@ -230,4 +236,34 @@ export const useGetSCCOnSale = () => {
       },
     });
     return { ...query, sccsData: query.data };
+};
+
+export const useCompensateSCC = () => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation<
+        { message: string; mutationResult: any },
+        Error,
+        CompensateSCCArgs
+    >({
+       mutationFn: async ({ sccId }: CompensateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+        fetchApi({
+            uri: `${URI}/scc/compensate`,
+            method: methods.PUT,
+            body: { sccId }
+        }),
+        onSuccess: (data, { onSuccess }) => {
+            queryClient.invalidateQueries([URI]);
+            if (onSuccess) {
+                onSuccess(data);
+            }
+        },
+        onError: (error, { onError }) => {
+            if (onError) {
+                onError(error);
+            }
+        },
+    });
+
+    return { ...mutation, compensateSCC: mutation.mutate };
 };

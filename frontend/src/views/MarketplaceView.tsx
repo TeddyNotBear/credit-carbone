@@ -2,7 +2,7 @@ import { Badge, Box, Button, Flex, Grid, Image } from "@chakra-ui/react";
 import { Contract, ethers } from "ethers";
 import { FC, useState } from "react";
 import { SCC_ABI } from "../abi";
-import { useGetSCCOnSale, useRemoveFromSaleCC } from '../api/file';
+import { useGetSCCOnSale, useRemoveFromSaleSCC } from '../api/file';
 import { SCCLogo } from '../assets';
 import { SCC_PROXY_CONTRACT_ADDRESS } from "../constants/addresses";
 import { useWeb3Auth } from "../hooks/useWeb3Auth";
@@ -10,7 +10,7 @@ import { ISCC } from "../types/SCC";
 
 const MarketplaceView: FC = () => {
     const { sccsData } = useGetSCCOnSale();
-    const { removeFromSaleSCC } = useRemoveFromSaleCC();
+    const { removeFromSaleSCC } = useRemoveFromSaleSCC();
     const { provider, address } = useWeb3Auth();
     const [buyLoading, setBuyLoadingLoading] = useState<any>(false);
     
@@ -41,6 +41,9 @@ const MarketplaceView: FC = () => {
             setBuyLoadingLoading(true);
             await sccContract.buy(address, idx);
             setBuyLoadingLoading(false);
+            removeFromSaleSCC({
+                sccId: sccId,
+            });
         } catch (error: any) {
             console.error(error);
         }

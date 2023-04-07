@@ -23,10 +23,11 @@ contract SCC is
 
     mapping(uint256 => bool) public onSale;
     mapping(uint256 => uint256) public tokenPrice;
-    mapping(uint256 => string) public cidOfTokenId;
     mapping(uint256 => address) public sellers;
-    mapping(uint256 => bool) private _totalSupply;
     mapping(address => mapping(uint256 => uint256)) public _pendingBalance;
+    mapping(uint256 => bool) public _totalSupply;
+    mapping(address => uint256[]) public tokensOwned;
+    mapping(address => uint256) public tokensOwnedCount;
 
     uint256[] public onSaleTokenIds;
 
@@ -102,6 +103,8 @@ contract SCC is
 
         safeTransferFrom(admin, owner, tokenId, 1, '');
 
+        tokensOwned[owner].push(tokenId);
+        tokensOwnedCount[owner]++;
         // Reset price
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;

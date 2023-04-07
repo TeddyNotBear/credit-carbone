@@ -86,16 +86,16 @@ export const SccBox: FC = () => {
                 </Box>
                 <Flex p='6'>
                   {
-                    !sccData.onSale
+                    !sccData.onSale && sccData.scc_retirement_status !== 'Compensate'
                     ? <InputGroup pr={2} >
                         <InputLeftElement pointerEvents='none' color='gray.300' fontSize='1.2em' children='$' />
                         <Input onChange={(e: any) => handleAmount(e)} placeholder='Enter amount' />
                       </InputGroup>
-                    : <Box>Already on sale</Box>
+                    : <></>
                   }
                   {
                     !sellLoading
-                    ? !sccData.onSale
+                    ? !sccData.onSale && sccData.scc_retirement_status !== 'Compensate'
                       ? <Button onClick={() => sellItem(amount, idx, sccData.id_scc)} colorScheme='orange'>Sell</Button>
                       : <></>
                     : !sccData.onSale

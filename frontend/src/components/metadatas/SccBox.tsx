@@ -11,7 +11,7 @@ import { SCC_ABI } from "../../abi";
 
 export const SccBox: FC = () => {
   const { sccsData, isLoading, isError } = useGetSCCByEmail();
-  const { provider, address } = useWeb3Auth();
+  const { provider, address, userInfo } = useWeb3Auth();
   const { putOnSaleSCC } = usePutOnSaleSCC();
 
   const [amount, setAmount] = useState<string>('');
@@ -22,13 +22,13 @@ export const SccBox: FC = () => {
     setAmount(e.target.value);
   }
 
-  const sellItem = async (amount: string, idx: number, sccId: string) => {
-    console.log(idx);
+  const sellItem = async (amount: string, tokenId: number, sccId: string) => {
+    console.log(tokenId);
     try {
       const browserProvider = new ethers.BrowserProvider(provider);
       const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
       const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-      const tx = await sccContract.putOnSale(address, idx, ethers.parseEther(amount));
+      const tx = await sccContract.putOnSale(address, tokenId, ethers.parseEther(amount));
       setSellLoadingLoading(true);
       await tx.wait();
       setSellLoadingLoading(false);
@@ -37,12 +37,12 @@ export const SccBox: FC = () => {
 
       putOnSaleSCC({
         sccId: sccId,
+        email: userInfo.email,
       });
     } catch (error: any) {
       console.error(error);
     }
   }
-
   return (
     <>
       <Grid templateColumns='repeat(3, 1fr)' gap={6}>
@@ -96,7 +96,7 @@ export const SccBox: FC = () => {
                   {
                     !sellLoading
                     ? !sccData.onSale && sccData.scc_retirement_status !== 'Compensate'
-                      ? <Button onClick={() => sellItem(amount, idx, sccData.id_scc)} colorScheme='orange'>Sell</Button>
+                      ? <Button onClick={() => sellItem(amount, sccData.onChainId, sccData.id_scc)} colorScheme='orange'>Sell</Button>
                       : <></>
                     : !sccData.onSale
                       ? <Button 

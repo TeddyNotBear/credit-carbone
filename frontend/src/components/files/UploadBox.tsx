@@ -68,7 +68,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
             upload({
                 jsonData: jsonData,
                 type: type,
-                email: userInfo.email,
+                email: localStorage.getItem('userEmail')!,
             })
         }
     };
@@ -79,62 +79,127 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
         console.log("ipfs", jsonData);
         if (jsonData) {
             let formatedJSON = new Array<any>;
-            jsonData.forEach((json: any) => {
-                let tmp = {
-                    name: json.id_uco,
-                    description: "La description du projet registry",
-                    image: "ipfs://QmetGyhGKYhyjyGci6bZo8h29psLm3LqMFAwgNSxLHFYRQ/POC.png",
-                    attributes: [
-                        {
-                            trait_type: "uco_registry",
-                            value: json.uco_registry
-                        },
-                        {
-                            trait_type: "uco_parcel_id",
-                            value: json.uco_parcel_id
-                        },
-                        {
-                            trait_type: "uco_parcel_area",
-                            value: json.uco_parcel_area
-                        },
-                        {
-                            trait_type: "uco_vintage",
-                            value: json.uco_vintage.toString()
-                        },
-                        {
-                            trait_type: "uco_country",
-                            value: json.uco_country
-                        },
-                        {
-                            trait_type: "uco_project_id",
-                            value: json.uco_project_id
-                        },
-                        {
-                            trait_type: "uco_primary_crop",
-                            value: json.uco_primary_crop
-                        },
-                        {
-                            trait_type: "uco_project_type",
-                            value: json.uco_project_type
-                        },
-                        {
-                            trait_type: "uco_project_developer",
-                            value: json.uco_project_developer
-                        },
-                        {
-                            trait_type: "uco_wallet_id",
-                            value: json.uco_wallet_id
-                        }
-                    ],
-                    compiler: "VMS"
-                };
-                formatedJSON.push(
-                    tmp
-                )
-            })
+            if(type == 'UCO') {
+                jsonData.forEach((json: any) => {
+                    let tmp = {
+                        name: json.id_uco,
+                        description: "La description du projet registry",
+                        image: "ipfs://QmetGyhGKYhyjyGci6bZo8h29psLm3LqMFAwgNSxLHFYRQ/POC.png",
+                        attributes: [
+                            {
+                                trait_type: "uco_registry",
+                                value: json.uco_registry
+                            },
+                            {
+                                trait_type: "uco_parcel_id",
+                                value: json.uco_parcel_id
+                            },
+                            {
+                                trait_type: "uco_parcel_area",
+                                value: json.uco_parcel_area
+                            },
+                            {
+                                trait_type: "uco_vintage",
+                                value: json.uco_vintage.toString()
+                            },
+                            {
+                                trait_type: "uco_country",
+                                value: json.uco_country
+                            },
+                            {
+                                trait_type: "uco_project_id",
+                                value: json.uco_project_id
+                            },
+                            {
+                                trait_type: "uco_primary_crop",
+                                value: json.uco_primary_crop
+                            },
+                            {
+                                trait_type: "uco_project_type",
+                                value: json.uco_project_type
+                            },
+                            {
+                                trait_type: "uco_project_developer",
+                                value: json.uco_project_developer
+                            },
+                            {
+                                trait_type: "uco_wallet_id",
+                                value: json.uco_wallet_id
+                            }
+                        ],
+                        compiler: "VMS"
+                    };
+                    formatedJSON.push(
+                        tmp
+                    )
+                })
+            }
+
+            if(type == 'SCC') {
+                jsonData.forEach((json: any) => {
+                    let tmp = {
+                        name: json.id_scc,
+                        description: "La description du projet registry",
+                        image: "ipfs://QmetGyhGKYhyjyGci6bZo8h29psLm3LqMFAwgNSxLHFYRQ/POC.png",
+                        attributes: [
+                            {
+                                trait_type: "scc_registry",
+                                value: json.scc_registry
+                            },
+                            {
+                                trait_type: "uco_parcel_id",
+                                value: json.uco_parcel_id
+                            },
+                            {
+                                trait_type: "uco_parcel_area",
+                                value: json.uco_parcel_area
+                            },
+                            {
+                                trait_type: "uco_vintage",
+                                value: json.uco_vintage.toString()
+                            },
+                            {
+                                trait_type: "uco_country",
+                                value: json.uco_country
+                            },
+                            {
+                                trait_type: "uco_project_id",
+                                value: json.uco_project_id
+                            },
+                            {
+                                trait_type: "uco_primary_crop",
+                                value: json.uco_primary_crop
+                            },
+                            {
+                                trait_type: "uco_project_type",
+                                value: json.uco_project_type
+                            },
+                            {
+                                trait_type: "uco_project_developer",
+                                value: json.uco_project_developer
+                            },
+                            {
+                                trait_type: "scc_uco_id",
+                                value: json.scc_uco_id
+                            },
+                            {
+                                trait_type: "uco_wallet_id",
+                                value: json.uco_wallet_id
+                            }
+                        ],
+                        compiler: "VMS"
+                    };
+                    formatedJSON.push(
+                        tmp
+                    )
+                })
+            }
+            
             setIpfsLoading(true);
+            console.log(localStorage.getItem('userEmail')!)
             uploadToIPFS({
                 jsonData: formatedJSON,
+                email: localStorage.getItem('userEmail')!,
                 onSuccess: uploadToIPFSSuccess,
                 onError: uploadToIPFSError,
             });

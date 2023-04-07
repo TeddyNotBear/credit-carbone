@@ -22,5 +22,6 @@ export interface ISCC {
     scc_uco_id: string,	
     uco_wallet_id?: string | undefined,
     onSale?: boolean,
+    onChainId: number,
     uploadedBy: string,
 }

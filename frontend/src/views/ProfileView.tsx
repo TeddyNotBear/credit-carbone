@@ -37,21 +37,21 @@ const ProfileView: FC = () => {
             const browserProvider = new ethers.BrowserProvider(provider);
             const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
             const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-            const res = await sccContract.tokensOwned(address, 0);
+            const counter = await sccContract.tokensOwnedCount(address);
 
             let jsonArr: ISCC[] = [];
 
-            const resTokensOwned = await sccContract.uri(res);
-            const response = await fetch(`https://ipfs.io/${resTokensOwned}`);
+            for (let index = 0; index < counter; index++) {
+                const res = await sccContract.tokensOwned(address, index);
+                const resTokensOwned = await sccContract.uri(res);
+                const response = await fetch(`https://ipfs.io/${resTokensOwned}`);
 
-            if(!response.ok)
+                if(!response.ok)
                 throw new Error(response.statusText);
 
-            const json = await response.json();
-            console.log(json);
-
-            jsonArr.push(json);
-
+                const json = await response.json();
+                jsonArr.push(json);
+            }
             setTokensOwnedArr(jsonArr);
           } catch (error) {
             console.error(error);

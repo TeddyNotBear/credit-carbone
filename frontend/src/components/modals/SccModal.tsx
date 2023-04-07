@@ -59,7 +59,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
             upload({
                 jsonData: jsonData,
                 type: 'SCC',
-                email: userInfo.email,
+                email: localStorage.getItem('userEmail')!,
             })
         }
     }, [jsonData, userInfo]);
@@ -68,7 +68,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
         if(jsonData) {
             verif({
                 jsonData: jsonData,
-                email: userInfo.email,
+                email: localStorage.getItem('userEmail')!,
                 onSuccess: verifSuccess,
                 onError: verifError,
             })
@@ -80,6 +80,7 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
             setIpfsLoading(true);
             uploadToIPFS({
                 jsonData: jsonData,
+                email: localStorage.getItem('userEmail')!,
                 onSuccess: uploadToIPFSSuccess,
                 onError: uploadToIPFSError,
             });

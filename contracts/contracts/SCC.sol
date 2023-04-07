@@ -25,11 +25,12 @@ contract SCC is
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => address) public sellers;
     mapping(address => mapping(uint256 => uint256)) public _pendingBalance;
-    mapping(uint256 => bool) public _totalSupply;
+    mapping(uint256 => bool) public _exists;
     mapping(address => uint256[]) public tokensOwned;
     mapping(address => uint256) public tokensOwnedCount;
 
     uint256[] public onSaleTokenIds;
+    uint256[] public sccIdArr;
 
     event PutOnSale(uint256 _tokenId, uint256 _price);
 
@@ -53,27 +54,26 @@ contract SCC is
         return tokenPrice[tokenId];
     }
 
+    function getTokensOwnedCount(address owner) public view returns (uint256) {
+        return tokensOwnedCount[owner];
+    }
+
     function exists(uint256 tokenId) public view returns (bool) {
-        if(_totalSupply[tokenId]) {
+        if(_exists[tokenId]) {
             return true;
         }
         return false;
     }
 
     function mint(address owner, uint256 quantity, string[] memory cidArr) external {
-        uint256[] memory sccIdArr = new uint[](quantity);
-        uint256[] memory amountArr = new uint[](quantity);
-        uint256 currentTokenId = sccCounter.current();
-        for (uint i = currentTokenId; i < quantity; i++) {
-            sccIdArr[i] = sccCounter.current();
-            amountArr[i] = 1;
-            _totalSupply[i] = true;
-            _pendingBalance[owner][i] = 1;
+        for (uint256 i = 0; i < quantity; i++) {
+            _mint(admin, sccCounter.current(), 1, '');
+            _exists[i] = true;
+            _pendingBalance[owner][tokensOwnedCount[owner]] = 1;
             _setURI(sccCounter.current(), cidArr[i]);
             sccCounter.increment();
+            tokensOwnedCount[owner]++;
         }
-
-        _mintBatch(admin, sccIdArr, amountArr, '');
     }
 
     // Allow smart-contract's admin to put a SCC on sale

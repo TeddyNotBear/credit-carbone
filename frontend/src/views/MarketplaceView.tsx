@@ -14,35 +14,37 @@ const MarketplaceView: FC = () => {
     const { provider, address } = useWeb3Auth();
     const [buyLoading, setBuyLoadingLoading] = useState<any>(false);
     
-    const removeItem = async (idx: number, sccId: string) => {
+    const removeItem = async (tokenId: number, sccId: string) => {
         try {
           const browserProvider = new ethers.BrowserProvider(provider);
           const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
           const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-          const tx = await sccContract.removeFromSale(address, idx);
+          const tx = await sccContract.removeFromSale(address, tokenId);
           await tx.wait();
           console.log(tx.hash);
     
           removeFromSaleSCC({
             sccId: sccId,
+            email: localStorage.getItem('userEmail')!,
           });
         } catch (error: any) {
           console.error(error);
         }
     }
 
-    const buyItem = async (idx: number, sccId: string) => {
-        console.log(idx);
+    const buyItem = async (tokenId: number, sccId: string) => {
+        console.log('tokenId :', tokenId);
         console.log(sccId);
         try {
             const browserProvider = new ethers.BrowserProvider(provider);
             const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
             const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
             setBuyLoadingLoading(true);
-            await sccContract.buy(address, idx);
+            await sccContract.buy(address, tokenId);
             setBuyLoadingLoading(false);
             removeFromSaleSCC({
                 sccId: sccId,
+                email: localStorage.getItem('userEmail')!,
             });
         } catch (error: any) {
             console.error(error);
@@ -93,7 +95,7 @@ const MarketplaceView: FC = () => {
                             <Flex p='6' gap={2}>
                                 {
                                     !buyLoading
-                                    ? <Button onClick={() => buyItem(idx, sccData.id_scc) } colorScheme='orange'>Buy</Button>
+                                    ? <Button onClick={() => buyItem(sccData.onChainId, sccData.id_scc) } colorScheme='orange'>Buy</Button>
                                     : <Button 
                                         isLoading 
                                         loadingText='Buying...' 
@@ -104,7 +106,7 @@ const MarketplaceView: FC = () => {
                                         Buy
                                     </Button> 
                                 }
-                                <Button onClick={() => removeItem(idx, sccData.id_scc)} colorScheme='red'>Remove</Button>
+                                <Button onClick={() => removeItem(sccData.onChainId, sccData.id_scc)} colorScheme='red'>Remove</Button>
                             </Flex>
                         </Box>
                         );

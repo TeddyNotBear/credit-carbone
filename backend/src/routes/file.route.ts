@@ -18,6 +18,14 @@ router.post('/upload', async (req: any, res: express.Response) => {
         const email = req.body.email;
         const jsonData = req.body.jsonData;
         const type = req.body.type;
+        console.log(email);
+
+        const userInfo = await User.findOne({email: email}).exec();
+        if (userInfo === null) {
+            res.status(404).end();
+            return;
+        }
+        if(userInfo.role === 'Corporate') return res.status(401).end();
         
         if(jsonData) {
             const fileController = new FileController();
@@ -39,8 +47,22 @@ router.post('/upload', async (req: any, res: express.Response) => {
 });
 
 router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
+    console.log('IPFS');
+
+    console.log('IPFS email:', req.body.email)
+
     try {
+        const email = req.body.email;
+
+        const userInfo = await User.findOne({email: email}).exec();
+        if (userInfo === null) {
+            res.status(404).end();
+            return;
+        }
+        if(userInfo.role === 'Corporate') return res.status(401).end();
+
         const jsonData = req.body.jsonData;
+
         if(jsonData) {
             const fileController = new FileController();
             const ipfsHashesArr = await fileController.uploadToIPFS(jsonData);
@@ -65,6 +87,14 @@ router.post('/verif', async (req, res: express.Response) => {
     try {
         const jsonData = req.body.jsonData;
         const email = req.body.email;
+
+        const userInfo = await User.findOne({email: email}).exec();
+        if (userInfo === null) {
+            res.status(404).end();
+            return;
+        }
+        if(userInfo.role === 'Corporate') return res.status(401).end();
+
         if(jsonData) {
             const fileController = new FileController();
             const userUCOs = await fileController.getUserUCO(email);
@@ -82,6 +112,15 @@ router.post('/verif', async (req, res: express.Response) => {
 router.put('/scc/putOnSale', async (req, res: express.Response) => {
     const sccId = req.body.sccId;
     if(!sccId) return res.status(500);
+
+    const email = req.body.email;
+
+    const userInfo = await User.findOne({email: email}).exec();
+    if (userInfo === null) {
+        res.status(404).end();
+        return;
+    }
+    if(userInfo.role === 'Corporate') return res.status(401).end();
     
     try {
         const filter = { id_scc: sccId };
@@ -96,6 +135,15 @@ router.put('/scc/putOnSale', async (req, res: express.Response) => {
 router.put('/scc/removeFromSale', async (req, res: express.Response) => {
     const sccId = req.body.sccId;
     if(!sccId) return res.status(500);
+
+    const email = req.body.email;
+
+    const userInfo = await User.findOne({email: email}).exec();
+    if (userInfo === null) {
+        res.status(404).end();
+        return;
+    }
+    if(userInfo.role === 'Corporate') return res.status(401).end();
     
     try {
         const filter = { id_scc: sccId };

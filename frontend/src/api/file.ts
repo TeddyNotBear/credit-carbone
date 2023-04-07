@@ -3,6 +3,7 @@ import { fetchApi, methods } from "./fetchApi";
 
 export interface uploadToIPFSArgs {
     jsonData: Array<string>;
+    email: string;
     onSuccess?: (successCallbackData: any) => void;
     onError?: (error: Error) => void;
 }
@@ -29,12 +30,14 @@ export interface GetUCOByEmailArgs {
 
 export interface PutOnSaleSCCArgs {
     sccId: string;
+    email: string;
     onSuccess?: (successCallbackData: any) => void;
     onError?: (error: Error) => void;
 }
 
 export interface RemoveFromSaleSCCArgs {
     sccId: string;
+    email: string;
     onSuccess?: (successCallbackData: any) => void;
     onError?: (error: Error) => void;
 }
@@ -83,11 +86,11 @@ export const useUploadToIPFS = () => {
         Error,
         uploadToIPFSArgs
     >({
-       mutationFn: async ({ jsonData }: uploadToIPFSArgs): Promise<{ message: string; mutationResult: any }> =>
+       mutationFn: async ({ jsonData, email }: uploadToIPFSArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
             uri: `${URI}/uploadToIPFS`,
             method: methods.POST,
-            body: { jsonData }
+            body: { jsonData, email }
         }),
         onSuccess: (data, { onSuccess }) => {
             queryClient.invalidateQueries([URI]);
@@ -173,11 +176,11 @@ export const usePutOnSaleSCC = () => {
         Error,
         PutOnSaleSCCArgs
     >({
-       mutationFn: async ({ sccId }: PutOnSaleSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+       mutationFn: async ({ sccId, email }: PutOnSaleSCCArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
             uri: `${URI}/scc/putOnSale`,
             method: methods.PUT,
-            body: { sccId }
+            body: { sccId, email }
         }),
         onSuccess: (data, { onSuccess }) => {
             queryClient.invalidateQueries([URI]);
@@ -203,11 +206,11 @@ export const useRemoveFromSaleSCC = () => {
         Error,
         RemoveFromSaleSCCArgs
     >({
-       mutationFn: async ({ sccId }: RemoveFromSaleSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+       mutationFn: async ({ sccId, email }: RemoveFromSaleSCCArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
             uri: `${URI}/scc/removeFromSale`,
             method: methods.PUT,
-            body: { sccId }
+            body: { sccId, email }
         }),
         onSuccess: (data, { onSuccess }) => {
             queryClient.invalidateQueries([URI]);

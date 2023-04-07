@@ -24,23 +24,47 @@ describe("SCC contract", function () {
       await scc.initialize(baseTokenURI, admin);
   });
 
-  it("Mint severals SCC", async () => {
+  it("Mint severals SCC (1)", async () => {
     const admin: string = await owner.getAddress();
+    const fakeOwner: string = await addr1.getAddress();
     const quantity: number = 3;
     const cidArr: string[] = ['1.json', '2.json', '3.json'];
 
-    await scc.connect(addr1).mint(quantity, cidArr);
+    await scc.connect(addr1).mint(fakeOwner, quantity, cidArr);
 
     expect(await scc.connect(addr1).balanceOf(admin, 0)).to.equal(BigNumber.from(1));
     expect(await scc.connect(addr1).balanceOf(admin, 1)).to.equal(BigNumber.from(1));
     expect(await scc.connect(addr1).balanceOf(admin, 2)).to.equal(BigNumber.from(1));
+
+    expect(await scc.connect(addr1)._pendingBalance(fakeOwner, 0)).to.equal(BigNumber.from(1));
+    expect(await scc.connect(addr1)._pendingBalance(fakeOwner, 1)).to.equal(BigNumber.from(1));
+    expect(await scc.connect(addr1)._pendingBalance(fakeOwner, 2)).to.equal(BigNumber.from(1));
+  });
+
+  it("Mint severals SCC (2)", async () => {
+    const admin: string = await owner.getAddress();
+    const fakeOwner: string = await addr1.getAddress();
+    const quantity: number = 3;
+    const cidArr: string[] = ['4.json', '5.json', '6.json'];
+
+    await scc.connect(addr1).mint(fakeOwner, quantity, cidArr);
+
+    expect(await scc.connect(addr1).balanceOf(admin, 3)).to.equal(BigNumber.from(1));
+    expect(await scc.connect(addr1).balanceOf(admin, 4)).to.equal(BigNumber.from(1));
+    expect(await scc.connect(addr1).balanceOf(admin, 5)).to.equal(BigNumber.from(1));
+
+    expect(await scc.connect(addr1)._pendingBalance(fakeOwner, 3)).to.equal(BigNumber.from(1));
+    expect(await scc.connect(addr1)._pendingBalance(fakeOwner, 4)).to.equal(BigNumber.from(1));
+    expect(await scc.connect(addr1)._pendingBalance(fakeOwner, 5)).to.equal(BigNumber.from(1));
   });
 
   it("Put on sale tokenId n°0", async () => {
     const tokenId: number = 0;
     const price: BigNumber = ethers.utils.parseEther("0.003");
+    const fakeOwner: string = await addr1.getAddress();
 
     await expect(scc.connect(addr1).putOnSale(
+      fakeOwner,
       tokenId, 
       price
     )).to.emit(scc, "PutOnSale").withArgs(tokenId, price);
@@ -56,8 +80,10 @@ describe("SCC contract", function () {
   it("Put on sale tokenId n°1", async () => {
     const tokenId: number = 1;
     const price: BigNumber = ethers.utils.parseEther("0.003");
+    const fakeOwner: string = await addr1.getAddress();
 
     await expect(scc.connect(addr1).putOnSale(
+      fakeOwner,
       tokenId, 
       price
     )).to.emit(scc, "PutOnSale").withArgs(tokenId, price);
@@ -72,8 +98,9 @@ describe("SCC contract", function () {
 
   it("Remove from sale tokenId n°1", async () => {
     const tokenId: number = 1;
+    const fakeOwner: string = await addr1.getAddress();
 
-    await scc.connect(addr1).removeFromSale(tokenId);
+    await scc.connect(addr1).removeFromSale(fakeOwner, tokenId);
 
     const onSaleTokenIds: BigNumber[] = await scc.connect(addr1).getOnSaleTokenIds();
     expect(onSaleTokenIds.length).to.equal(1);
@@ -81,11 +108,12 @@ describe("SCC contract", function () {
   });
 
   it("Buy tokenId n°0", async () => {
+    const admin: string = await owner.getAddress();
     const tokenId: number = 0;
+    const fakeOwner: string = await addr1.getAddress();
 
-    const price = await scc.connect(addr2).getTokenPrice(tokenId);
-    const previousBalance: BigNumber = await addr2.getBalance();
-    await scc.connect(addr2).buy(tokenId, { value: price });
+    await scc.connect(addr2).setApprovalForAll(admin, true);
+    await scc.connect(addr2).buy(fakeOwner, tokenId);
   });
 
 });

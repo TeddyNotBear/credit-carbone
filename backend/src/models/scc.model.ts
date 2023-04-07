@@ -57,6 +57,7 @@ const sccSchema = new Schema({
 });
 
 sccSchema.pre<ISCC>('save', async function(next: any) {
+    // autoIncrementModelID('sccIdOnChain', this, next);
     try {
         return next();
     } catch (error) {

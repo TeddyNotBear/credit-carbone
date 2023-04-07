@@ -2,6 +2,7 @@ import { UCO, IUCO } from './../models/uco.model.js';
 import { SCC, ISCC } from './../models/scc.model.js';
 
 import { create } from 'ipfs-http-client';
+import { Counter } from '../models/counter.model.js';
 
 export class FileController {
 
@@ -26,11 +27,29 @@ export class FileController {
 
     public async createSCCInDB(data: ISCC, userEmail: string) {
         try {
-            const scc: ISCC = new SCC({
-                ...data,
-                uploadedBy: userEmail
-            });
-            await scc.save(); 
+            Counter.findByIdAndUpdate(        // ** Method call begins **
+                { _id: "sccIdOnChain" },                  // The ID to find for in counters model
+                { $inc: { seq: 1 } },                // The update
+                { new: true, upsert: true },         // The options
+                async (error, counter) => {           // The callback
+                    let seqId: any;
+                    if(counter == null) {
+                        const newVal = new Counter({ _id: "sccIdOnChain", seq: 1 });
+                        newVal.save();
+                        seqId = 1;
+                    } else {
+                        seqId = counter.seq;
+                    }
+
+                    const scc: ISCC = new SCC({
+                        ...data,
+                        onChainId: seqId,
+                        uploadedBy: userEmail
+                    });
+                    await scc.save();
+                }
+            ); 
+
         } catch (error) {
             console.log(error);
         }
@@ -73,12 +92,12 @@ export class FileController {
         jsonData.forEach(async (scc: ISCC) => {
             const filter = { id_uco: scc.scc_uco_id };
             const update = { uco_retirement_status: 'Retired' };
-            console.log(scc.scc_uco_id);
             await UCO.findOneAndUpdate(filter, update, { new: true });
         });
     }
 
     public async uploadToIPFS(jsonData: Array<any>) {
+        console.log('IPFS');
         const auth = 'Basic ' + Buffer.from(process.env["INFURA_PROJECT_ID"] + ':' + process.env["INFURA_SECRET_KEY"]).toString('base64');
         const ipfs = await create({
             host: 'ipfs.infura.io',

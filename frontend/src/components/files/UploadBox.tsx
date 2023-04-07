@@ -143,36 +143,36 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                         image: "ipfs://QmetGyhGKYhyjyGci6bZo8h29psLm3LqMFAwgNSxLHFYRQ/POC.png",
                         attributes: [
                             {
+                                trait_type: "scc_address",
+                                value: json.scc_address
+                            },
+                            {
+                                trait_type: "scc_retirement_status",
+                                value: json.scc_retirement_status
+                            },
+                            {
+                                trait_type: "scc_ghg_value",
+                                value: json.scc_ghg_value
+                            },
+                            {
+                                trait_type: "scc_farmer_fees",
+                                value: json.scc_farmer_fees
+                            },
+                            {
+                                trait_type: "scc_developer_fees",
+                                value: json.scc_developer_fees
+                            },
+                            {
+                                trait_type: "scc_minter_registry_fees",
+                                value: json.scc_minter_registry_fees
+                            },
+                            {
                                 trait_type: "scc_registry",
                                 value: json.scc_registry
                             },
                             {
                                 trait_type: "uco_parcel_id",
                                 value: json.uco_parcel_id
-                            },
-                            {
-                                trait_type: "uco_parcel_area",
-                                value: json.uco_parcel_area
-                            },
-                            {
-                                trait_type: "uco_vintage",
-                                value: json.uco_vintage.toString()
-                            },
-                            {
-                                trait_type: "uco_country",
-                                value: json.uco_country
-                            },
-                            {
-                                trait_type: "uco_project_id",
-                                value: json.uco_project_id
-                            },
-                            {
-                                trait_type: "uco_primary_crop",
-                                value: json.uco_primary_crop
-                            },
-                            {
-                                trait_type: "uco_project_type",
-                                value: json.uco_project_type
                             },
                             {
                                 trait_type: "uco_project_developer",
@@ -183,8 +183,12 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                                 value: json.scc_uco_id
                             },
                             {
-                                trait_type: "uco_wallet_id",
-                                value: json.uco_wallet_id
+                                trait_type: "uco_project_id",
+                                value: json.uco_project_id
+                            },
+                            {
+                                trait_type: "scc_uco_id",
+                                value: json.scc_uco_id
                             }
                         ],
                         compiler: "VMS"

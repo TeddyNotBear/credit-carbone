@@ -62,9 +62,19 @@ const TopBar = () => {
               spacing={4}
               display={{ base: 'none', md: 'flex' }}
             >
-              {Links.map(link => (
-                <NavLink key={link.name} name={link.name} path={link.path} />
-              ))}
+              {Links.map(link => 
+              {
+                if(localStorage.getItem('role') == 'Corporate' && (link.name == 'Marketplace' || link.name == 'Profile') ) {
+                  return(
+                    <NavLink key={link.name} name={link.name} path={link.path} />
+                  )
+                }
+                if(localStorage.getItem('role') == 'Mandataire' && (link.name == 'Marketplace' || link.name == 'Profile' || link.name == 'UCO' || link.name == 'SCC' ) ) {
+                  return(
+                    <NavLink key={link.name} name={link.name} path={link.path} />
+                  )
+                }
+              })}
             </HStack>
           </HStack>
           <Flex alignItems={'center'} justify="flex-end">

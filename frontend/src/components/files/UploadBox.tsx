@@ -35,11 +35,11 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const mint = async () => {
         console.log('Upload Box :', ipfsHashes);
         try {
-            if(ipfsHashes) {
+            if (ipfsHashes) {
                 const browserProvider = new ethers.BrowserProvider(provider);
                 const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
                 let tx;
-                if(type === 'UCO') {
+                if (type === 'UCO') {
                     const ucoContract = new Contract(UCO_PROXY_CONTRACT_ADDRESS, UCO_ABI, signer);
                     tx = await ucoContract.mint(address, ipfsHashes.length, ipfsHashes);
                 } else if(type === 'SCC') {
@@ -64,7 +64,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
         setIpfsHashes(callbackData.data);
         setIpfsLoading(false);
         console.log(callbackData.data);
-        if(jsonData) {
+        if (jsonData) {
             upload({
                 jsonData: jsonData,
                 type: type,
@@ -73,14 +73,68 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
         }
     };
 
-    const uploadToIPFSError = () => {};
+    const uploadToIPFSError = () => { };
 
     const handleUpload = useCallback(async () => {
-        console.log(jsonData);
-        if(jsonData) {
+        console.log("ipfs", jsonData);
+        if (jsonData) {
+            let formatedJSON = new Array<any>;
+            jsonData.forEach((json: any) => {
+                let tmp = {
+                    name: json.id_uco,
+                    description: "La description du projet registry",
+                    image: "ipfs://QmetGyhGKYhyjyGci6bZo8h29psLm3LqMFAwgNSxLHFYRQ/POC.png",
+                    attributes: [
+                        {
+                            trait_type: "uco_registry",
+                            value: json.uco_registry
+                        },
+                        {
+                            trait_type: "uco_parcel_id",
+                            value: json.uco_parcel_id
+                        },
+                        {
+                            trait_type: "uco_parcel_area",
+                            value: json.uco_parcel_area
+                        },
+                        {
+                            trait_type: "uco_vintage",
+                            value: json.uco_vintage.toString()
+                        },
+                        {
+                            trait_type: "uco_country",
+                            value: json.uco_country
+                        },
+                        {
+                            trait_type: "uco_project_id",
+                            value: json.uco_project_id
+                        },
+                        {
+                            trait_type: "uco_primary_crop",
+                            value: json.uco_primary_crop
+                        },
+                        {
+                            trait_type: "uco_project_type",
+                            value: json.uco_project_type
+                        },
+                        {
+                            trait_type: "uco_project_developer",
+                            value: json.uco_project_developer
+                        },
+                        {
+                            trait_type: "uco_wallet_id",
+                            value: json.uco_wallet_id
+                        }
+                    ],
+                    compiler: "VMS"
+                };
+                formatedJSON.push(
+                    tmp
+                )
+            })
             setIpfsLoading(true);
             uploadToIPFS({
-                jsonData: jsonData,
+                jsonData: formatedJSON,
                 onSuccess: uploadToIPFSSuccess,
                 onError: uploadToIPFSError,
             });
@@ -89,7 +143,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
 
     const handleXLSXFile = useCallback(async (event: any) => {
         event.preventDefault();
-        if(event.target.files) {
+        if (event.target.files) {
             const reader = new FileReader();
             reader.onload = (event?: any) => {
                 const data = event.target.result;
@@ -105,7 +159,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     }, [jsonData]);
 
     return (
-      <div>
+        <div>
             <AspectRatio width="64" ratio={1}>
                 <Box
                     borderColor="gray.300"
@@ -124,92 +178,92 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                     whileHover="hover"
                 >
                     <Box position="relative" height="100%" width="100%">
-                    <Box
-                        position="absolute"
-                        top="0"
-                        left="0"
-                        height="100%"
-                        width="100%"
-                        display="flex"
-                        flexDirection="column"
-                    >
-                        <Stack
-                        height="100%"
-                        width="100%"
-                        display="flex"
-                        alignItems="center"
-                        justify="center"
-                        spacing="4"
+                        <Box
+                            position="absolute"
+                            top="0"
+                            left="0"
+                            height="100%"
+                            width="100%"
+                            display="flex"
+                            flexDirection="column"
                         >
-                        <Box height="16" width="12" position="relative">
+                            <Stack
+                                height="100%"
+                                width="100%"
+                                display="flex"
+                                alignItems="center"
+                                justify="center"
+                                spacing="4"
+                            >
+                                <Box height="16" width="12" position="relative">
+                                </Box>
+                                <Stack p="8" textAlign="center" spacing="1">
+                                    <Heading fontSize="lg" color="gray.700" fontWeight="bold">
+                                        Drop files here
+                                    </Heading>
+                                    <Text fontWeight="light">or click to upload</Text>
+                                </Stack>
+                            </Stack>
                         </Box>
-                        <Stack p="8" textAlign="center" spacing="1">
-                            <Heading fontSize="lg" color="gray.700" fontWeight="bold">
-                            Drop files here
-                            </Heading>
-                            <Text fontWeight="light">or click to upload</Text>
-                        </Stack>
-                        </Stack>
-                    </Box>
-                    <Input
-                        type="file"
-                        height="100%"
-                        width="100%"
-                        position="absolute"
-                        top="0"
-                        left="0"
-                        opacity="0"
-                        aria-hidden="true"
-                        onDragEnter={startAnimation}
-                        onDragLeave={stopAnimation}
-                        onChange={(e) => handleXLSXFile(e)}
-                    />
+                        <Input
+                            type="file"
+                            height="100%"
+                            width="100%"
+                            position="absolute"
+                            top="0"
+                            left="0"
+                            opacity="0"
+                            aria-hidden="true"
+                            onDragEnter={startAnimation}
+                            onDragLeave={stopAnimation}
+                            onChange={(e) => handleXLSXFile(e)}
+                        />
                     </Box>
                 </Box>
             </AspectRatio>
-            { isSuccess && <Text color="green">{ callbackMessage }</Text> }
-            { txHash &&  
+            {isSuccess && <Text color="green">{callbackMessage}</Text>}
+            {txHash &&
                 <a href={`https://mumbai.polygonscan.com/tx/${txHash}`} target="_blank" rel="noopener noreferrer">
-                    Tx hash : { trimString(txHash, 18) }
+                    Tx hash : {trimString(txHash, 18)}
                 </a>
             }
             <ButtonGroup gap='1' pt={4}>
                 {
                     type && type === 'UCO'
-                    ? !ipfsLoading 
-                        ? <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
-                        : <Button 
-                            isLoading 
-                            loadingText='Uploading...' 
-                            colorScheme='green'
-                            variant='outline'
-                            spinnerPlacement='start'
-                        >
-                            Upload
-                        </Button> 
-                    : <Button onClick={onOpen} colorScheme='green'>Upload</Button>
+                        ? !ipfsLoading
+                            ? <Button onClick={handleUpload} colorScheme='green'>Upload</Button>
+                            : <Button
+                                isLoading
+                                loadingText='Uploading...'
+                                colorScheme='green'
+                                variant='outline'
+                                spinnerPlacement='start'
+                            >
+                                Upload
+                            </Button>
+                        : <Button onClick={onOpen} colorScheme='green'>Upload</Button>
                 }
-                { !mintLoading 
+                {!mintLoading
                     ? <Button onClick={mint} colorScheme='orange'>Mint</Button>
-                    : <Button 
-                        isLoading 
-                        loadingText='Minting...' 
+                    : <Button
+                        isLoading
+                        loadingText='Minting...'
                         colorScheme='orange'
                         variant='outline'
                         spinnerPlacement='start'
                     >
                         Mint
-                    </Button> 
+                    </Button>
                 }
             </ButtonGroup>
-            <SccModal 
-                jsonData={jsonData} 
-                isOpen={isOpen} 
-                onClose={onClose} 
-                setSuccess={setSuccess} 
-                setCallbackMessage={setCallbackMessage} 
+            <SccModal
+                jsonData={jsonData}
+                isOpen={isOpen}
+                onClose={onClose}
+                setSuccess={setSuccess}
+                setCallbackMessage={setCallbackMessage}
                 setIpfsHashes={setIpfsHashes}
             />
-      </div>
+        </div>
     );
 }

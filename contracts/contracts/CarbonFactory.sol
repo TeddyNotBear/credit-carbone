@@ -1,5 +1,5 @@
-import "./SCC.sol";
-import "./UCO.sol";
+import "./SCC1155.sol";
+import "./uco.sol";
 
 //import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 // import './interface/IMyERC1155.sol';
@@ -17,8 +17,8 @@ contract CarbonFactory is
         admin = _admin;
     }
 
-    mapping(address => address) public SCCstorage;
-    mapping(address => address) public UCOstorage;
+    mapping(address => address[]) public SCCstorage;
+    mapping(address => address[]) public UCOstorage;
     event SCCDeployed(address _sccAddress);
     event UCODeployed(address _ucoAddress);
     address admin;
@@ -36,7 +36,7 @@ contract CarbonFactory is
         // créer un nouveau contrat UCO
         UCO uco = new UCO();
         uco.initialize(_name, _symbol,msg.sender);
-        UCOstorage[_adminAddr] = address(uco);
+        UCOstorage[_adminAddr].push(address(uco));
         emit UCODeployed(address(uco));
         return address(uco);
     
@@ -51,15 +51,15 @@ contract CarbonFactory is
         SCC scc = new SCC();
         scc.initialize(baseUri,msg.sender);
        // scc.mint(_to, uri, data,quantity);
-        SCCstorage[_to] = address(scc);
+        SCCstorage[_to].push(address(scc));
         emit SCCDeployed(address(scc));
     }
 
-    function getSCCstorage(address _admin) public view returns(address){
+    function getSCCstorage(address _admin) public view returns(address[] memory){
         return SCCstorage[_admin];
     }
 
-        function getUCOstorage(address _admin) public view returns(address){
+        function getUCOstorage(address _admin) public view returns(address[] memory){
         return UCOstorage[_admin];
     }
 }

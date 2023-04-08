@@ -31,10 +31,11 @@ contract CarbonFactory is
     */
 
 
+   
     function deployUCO(address _adminAddr,string memory _name ,string memory _symbol) public returns (address){
         // créer un nouveau contrat UCO
         UCO uco = new UCO();
-        uco.initialize(_name, _symbol);
+        uco.initialize(_name, _symbol,msg.sender);
         UCOstorage[_adminAddr] = address(uco);
         emit UCODeployed(address(uco));
         return address(uco);
@@ -46,13 +47,12 @@ contract CarbonFactory is
         address _to,
         string memory baseUri,
         address ucoAddr
-    ) public returns (address) {
+    ) public {
         SCC scc = new SCC();
-        scc.initialize(baseUri,ucoAddr);
+        scc.initialize(baseUri,msg.sender);
        // scc.mint(_to, uri, data,quantity);
         SCCstorage[_to] = address(scc);
         emit SCCDeployed(address(scc));
-        return address(scc);
     }
 
     function getSCCstorage(address _admin) public view returns(address){

@@ -5,24 +5,39 @@ pragma solidity ^0.8.9;
 // import "hardhat/console.sol";
 
 import 'erc721a-upgradeable/contracts/ERC721AUpgradeable.sol';
-import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+//import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
 // use IERC721AUpgradeable to remove transfer function
-contract UCO is ERC721AUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeable {
+contract UCO is ERC721AUpgradeable, ReentrancyGuardUpgradeable {
     using Counters for Counters.Counter;
     Counters.Counter private cidTokenCounter;
 
     string private _baseTokenURI;
     mapping(uint256 => string) public cidOfTokenId;
+    address private factoryAddr;
+    address private admin;
 
-    function initialize(string memory _name, string memory _symbol) initializerERC721A initializer public {
+    function initialize(string memory _name, string memory _symbol,address _admin) initializerERC721A initializer public {
         __ERC721A_init(_name, _symbol);
-        __Ownable_init();
+        factoryAddr = msg.sender;
+        admin = _admin;
+        //__Ownable_init();
         __ReentrancyGuard_init();
     }
 
+
+    function _onlyOwner() private view {
+        require(
+            msg.sender == factoryAddr || msg.sender == admin,
+            "Not the Owner of the Gallery"
+        );
+    }
+    modifier onlyOwner() {
+        _onlyOwner();
+        _;
+    }
     // add address in params
     function mint(address owner, uint256 quantity, string[] memory cidArr) external payable nonReentrant {
         _safeMint(owner, quantity, '');

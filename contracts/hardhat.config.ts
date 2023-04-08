@@ -13,14 +13,9 @@ const hhConfig: HardhatUserConfig = {
   networks: {
     hardhat: {
     },
-    mumbai: {
-      url: POLYGON_MUMBAI_RPC_URL,
-      accounts: [PRIVATE_KEY],
-    }
+   
   },
-  etherscan: {
-    apiKey: POLYGON_API_KEY
-  },
+
   solidity: {
     version: "0.8.17",
     settings: {

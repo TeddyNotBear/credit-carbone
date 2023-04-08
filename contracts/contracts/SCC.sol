@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+//import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -12,7 +12,7 @@ import "hardhat/console.sol";
 
 contract SCC is 
     ERC1155URIStorageUpgradeable, 
-    OwnableUpgradeable, 
+    //OwnableUpgradeable, 
     ReentrancyGuardUpgradeable, 
     PausableUpgradeable
 {
@@ -20,7 +20,7 @@ contract SCC is
     Counters.Counter private sccCounter;
 
     address private admin;
-
+    address private factoryAddr;
     mapping(uint256 => bool) public onSale;
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => address) public sellers;
@@ -28,7 +28,7 @@ contract SCC is
     mapping(uint256 => bool) public _exists;
     mapping(address => uint256[]) public tokensOwned;
     mapping(address => uint256) public tokensOwnedCount;
-
+    
     uint256[] public onSaleTokenIds;
     uint256[] public sccIdArr;
 
@@ -36,10 +36,22 @@ contract SCC is
 
     function initialize(string memory _baseTokenURI, address _admin) public initializer {
         __ERC1155URIStorage_init();
-        __Ownable_init();
+        //__Ownable_init();
+        factoryAddr = msg.sender;
         __ReentrancyGuard_init();
         _setBaseURI(_baseTokenURI);
         admin = _admin;
+    }
+
+     function _onlyOwner() private view {
+        require(
+            msg.sender == factoryAddr || msg.sender == admin,
+            "Not the Owner of the Gallery"
+        );
+    }
+    modifier onlyOwner() {
+        _onlyOwner();
+        _;
     }
 
     function getTotalSupply() public view returns (uint256) {

@@ -43,7 +43,13 @@ export interface RemoveFromSaleSCCArgs {
 }
 
 export interface CompensateSCCArgs {
-    onChainId: number;
+    sccId: string;
+    onSuccess?: (successCallbackData: any) => void;
+    onError?: (error: Error) => void;
+}
+
+export interface GetRetirementStatus {
+    sccId: string;
     onSuccess?: (successCallbackData: any) => void;
     onError?: (error: Error) => void;
 }
@@ -249,11 +255,11 @@ export const useCompensateSCC = () => {
         Error,
         CompensateSCCArgs
     >({
-       mutationFn: async ({ onChainId }: CompensateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+       mutationFn: async ({ sccId }: CompensateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
             uri: `${URI}/scc/compensate`,
             method: methods.PUT,
-            body: { onChainId }
+            body: { sccId }
         }),
         onSuccess: (data, { onSuccess }) => {
             queryClient.invalidateQueries([URI]);
@@ -269,4 +275,34 @@ export const useCompensateSCC = () => {
     });
 
     return { ...mutation, compensateSCC: mutation.mutate };
+};
+
+export const useGetRetirementStatus = () => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation<
+        { message: string; mutationResult: any },
+        Error,
+        CompensateSCCArgs
+    >({
+       mutationFn: async ({ sccId }: GetRetirementStatus): Promise<{ message: string; mutationResult: any }> =>
+        fetchApi({
+            uri: `${URI}/scc/retirementStatus`,
+            method: methods.POST,
+            body: { sccId }
+        }),
+        onSuccess: (data, { onSuccess }) => {
+            queryClient.invalidateQueries([URI]);
+            if (onSuccess) {
+                onSuccess(data);
+            }
+        },
+        onError: (error, { onError }) => {
+            if (onError) {
+                onError(error);
+            }
+        },
+    });
+
+    return { ...mutation, getRetirementStatus: mutation.mutate };
 };

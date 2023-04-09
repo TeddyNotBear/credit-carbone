@@ -98,7 +98,7 @@ contract SCC is
 
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;
-        _orderedArray(tokenId - 1);
+        _orderedArray(tokenId);
     }
 
     // Allow everyone to buy a SCC
@@ -112,7 +112,7 @@ contract SCC is
         // Reset price
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;
-        _orderedArray(tokenId - 1);
+        _orderedArray(tokenId);
     }
 
     // Function to receive Ether. msg.data must be empty

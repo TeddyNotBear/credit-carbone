@@ -77,9 +77,75 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
 
     const handleUpload = useCallback(async (jsonData: any) => {
         if(jsonData) {
+            let formatedJSON = new Array<any>;
+            jsonData.forEach((json: any) => {
+                let tmp = {
+                    name: json.id_scc,
+                    description: "La description du projet registry",
+                    image: "ipfs://QmetGyhGKYhyjyGci6bZo8h29psLm3LqMFAwgNSxLHFYRQ/POC.png",
+                    attributes: [
+                        {
+                            trait_type: "scc_id",
+                            value: json.id_scc
+                        },
+                        {
+                            trait_type: "scc_address",
+                            value: json.scc_address
+                        },
+                        /*{
+                            trait_type: "scc_retirement_status",
+                            value: json.scc_retirement_status
+                        },*/
+                        {
+                            trait_type: "scc_ghg_value",
+                            value: json.scc_ghg_value
+                        },
+                        {
+                            trait_type: "scc_farmer_fees",
+                            value: json.scc_farmer_fees
+                        },
+                        {
+                            trait_type: "scc_developer_fees",
+                            value: json.scc_developer_fees
+                        },
+                        {
+                            trait_type: "scc_minter_registry_fees",
+                            value: json.scc_minter_registry_fees
+                        },
+                        {
+                            trait_type: "scc_registry",
+                            value: json.scc_registry
+                        },
+                        {
+                            trait_type: "uco_parcel_id",
+                            value: json.uco_parcel_id
+                        },
+                        {
+                            trait_type: "uco_project_developer",
+                            value: json.uco_project_developer
+                        },
+                        {
+                            trait_type: "scc_uco_id",
+                            value: json.scc_uco_id
+                        },
+                        {
+                            trait_type: "uco_project_id",
+                            value: json.uco_project_id
+                        },
+                        {
+                            trait_type: "scc_uco_id",
+                            value: json.scc_uco_id
+                        }
+                    ],
+                    compiler: "VMS"
+                };
+                formatedJSON.push(
+                    tmp
+                )
+            })
             setIpfsLoading(true);
             uploadToIPFS({
-                jsonData: jsonData,
+                jsonData: formatedJSON,
                 email: localStorage.getItem('userEmail')!,
                 onSuccess: uploadToIPFSSuccess,
                 onError: uploadToIPFSError,

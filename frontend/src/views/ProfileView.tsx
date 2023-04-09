@@ -18,11 +18,12 @@ import { ethers, Contract } from 'ethers';
 import { SCC_PROXY_CONTRACT_ADDRESS } from '../constants/addresses';
 import { SCC_ABI } from '../abi';
 import { ISCC } from '../types/SCC';
-import { useCompensateSCC } from '../api/file';
+import { useCompensateSCC, useGetRetirementStatus } from '../api/file';
 
 const ProfileView: FC = () => {
     const { userInfo, address, provider, getPrivateKey } = useWeb3Auth();
     const { compensateSCC } = useCompensateSCC();
+    const { getRetirementStatus } = useGetRetirementStatus();
     const [privateKey, setPrivateKey] = useState<string>();
     const [tokensOwnedArr, setTokensOwnedArr] = useState<any[]>();
 
@@ -50,6 +51,20 @@ const ProfileView: FC = () => {
                 throw new Error(response.statusText);
 
                 const json = await response.json();
+
+                const getRetirementStatusSuccess = (callbakcData: any) => { 
+                    json.scc_retirement_status = callbakcData[0].scc_retirement_status;
+                };
+
+                try {
+                    getRetirementStatus({
+                      sccId: json.attributes[0].value,
+                      onSuccess: getRetirementStatusSuccess,
+                    });
+                } catch (error: any) {
+                    console.error(error);
+                }
+
                 jsonArr.push(json);
             }
             setTokensOwnedArr(jsonArr);
@@ -62,17 +77,15 @@ const ProfileView: FC = () => {
         init();
     }, [compensateSCC]);
 
-    const compensateItem = async (tokenId: number) => {
-        console.log('tokenId :', tokenId);
+    const compensateItem = async (tokenId: string) => {
         try {
           compensateSCC({
-            onChainId: tokenId,
+            sccId: tokenId,
           });
         } catch (error: any) {
           console.error(error);
         }
     }
-    
 
     return (
         <>
@@ -105,50 +118,49 @@ const ProfileView: FC = () => {
             </Center>
             <Grid templateColumns='repeat(4, 1fr)' gap={6} px={16} py={6}>
             {
-                tokensOwnedArr && tokensOwnedArr.map((sccData: ISCC, idx: any) => {
+                tokensOwnedArr && tokensOwnedArr.map((sccData: any) => {
                     return (
-                    <Box maxW='sm' key={sccData.id_scc} borderWidth='1px' borderRadius='lg' overflow='hidden'>
-                        <Image src={SCCLogo} alt={SCCLogo} />
+                        <Box maxW='sm' key={sccData.attributes[0].value} borderWidth='1px' borderRadius='lg' overflow='hidden'>
+                            <Image src={SCCLogo} alt={SCCLogo} />
 
-                        <Box p='6'>
-                        <Box display='flex' alignItems='baseline'>
-                            <Badge borderRadius='full' px='2' colorScheme='teal'>New</Badge>
+                            <Box p='6'>
+                            <Box display='flex' alignItems='baseline'>
+                                <Badge borderRadius='full' px='2' colorScheme='teal'>New</Badge>
+                                <Box
+                                color='gray.500'
+                                fontWeight='semibold'
+                                letterSpacing='wide'
+                                fontSize='xs'
+                                textTransform='uppercase'
+                                ml='2'
+                                >
+                                n°{sccData.attributes[0].value} &bull; {sccData.scc_retirement_status}
+                                </Box>
+                            </Box>
                             <Box
-                            color='gray.500'
-                            fontWeight='semibold'
-                            letterSpacing='wide'
-                            fontSize='xs'
-                            textTransform='uppercase'
-                            ml='2'
+                                mt='1'
+                                fontWeight='semibold'
+                                as='h4'
+                                lineHeight='tight'
+                                noOfLines={1}
                             >
-                            n°{sccData.id_scc} &bull; {sccData.scc_retirement_status} &bull; {sccData.uco_vintage}
+                                {sccData.attributes[6].value} - {sccData.attributes[2].value} ghg - {sccData.attributes[3].value} fees
                             </Box>
-                        </Box>
-                        <Box
-                            mt='1'
-                            fontWeight='semibold'
-                            as='h4'
-                            lineHeight='tight'
-                            noOfLines={1}
-                        >
-                            {sccData.scc_registry} - {sccData.scc_ghg_value} ghg - {sccData.scc_farmer_fees} fees
-                        </Box>
-                        <Box>{sccData.uco_country}</Box>
-                        <Box
-                            color='gray.500'
-                            fontSize='xs'
-                            textTransform='uppercase'
-                            >
-                            linked to uco n°{sccData.scc_uco_id}
+                            <Box
+                                color='gray.500'
+                                fontSize='xs'
+                                textTransform='uppercase'
+                                >
+                                linked to uco n°{sccData.attributes[11].value}
+                                </Box>
                             </Box>
+                            <Center pb={6}>
+                                {   sccData.scc_retirement_status !== 'Compensate'
+                                    ? <Button onClick={() => compensateItem(sccData.attributes[0].value)} colorScheme='orange'>Compensate</Button> 
+                                    : <></>
+                                }
+                            </Center>
                         </Box>
-                        <Center pb={6}>
-                            {   sccData.scc_retirement_status !== 'Compensate'
-                                ? <Button onClick={() => compensateItem(sccData.onChainId)} colorScheme='orange'>Compensate</Button> 
-                                : <></>
-                            }
-                        </Center>
-                    </Box>
                     );
                 })
             }

@@ -150,12 +150,12 @@ router.put('/scc/removeFromSale', async (req, res: express.Response) => {
 });
 
 router.put('/scc/compensate', async (req, res: express.Response) => {
-    const onChainId = req.body.onChainId;
-    if(!onChainId) return res.status(500);
-    console.log(onChainId);
+    const sccId = req.body.sccId;
+    if(!sccId) return res.status(500);
+    console.log(sccId);
     
     try {
-        const filter = { onChainId: onChainId };
+        const filter = { id_scc: sccId };
         const update = { scc_retirement_status: 'Compensate' };
         await SCC.findOneAndUpdate(filter, update, { new: true });
         return res.status(200).send({ message: "Update successfully!"});
@@ -199,6 +199,20 @@ router.get('/scc/onSale', async (req, res: express.Response) => {
         const filter = { onSale: true };
         const sccsData = await SCC.find(filter).exec();
         return res.status(200).send(sccsData);
+    } catch (error) {
+        console.log(error)
+    }
+
+});
+
+router.post('/scc/retirementStatus', async (req, res: express.Response) => {
+    const sccId = req.body.sccId;
+    if(!sccId) return res.status(500).send({ message: "Please a valid id!"});
+
+    try {
+        const filter = { id_scc: sccId };
+        const sccData = await SCC.find(filter).exec();
+        return res.status(200).send(sccData);
     } catch (error) {
         console.log(error)
     }

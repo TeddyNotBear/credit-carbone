@@ -28,7 +28,7 @@ export const SccBox: FC = () => {
       const browserProvider = new ethers.BrowserProvider(provider);
       const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
       const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-      const tx = await sccContract.putOnSale(address, tokenId, ethers.parseEther(amount));
+      const tx = await sccContract.putOnSale(address, tokenId - 1, ethers.parseEther(amount));
       setSellLoadingLoading(true);
       await tx.wait();
       setSellLoadingLoading(false);
@@ -83,6 +83,12 @@ export const SccBox: FC = () => {
                     >
                       linked to uco n°{sccData.scc_uco_id}
                     </Box>
+                  <Box
+                      color='gray.500'
+                      fontSize='xs'
+                      textTransform='uppercase'
+                    >
+                      On-Chain id : {sccData.onChainId}</Box>
                 </Box>
                 <Flex p='6'>
                   {

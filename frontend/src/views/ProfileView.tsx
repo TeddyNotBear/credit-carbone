@@ -62,10 +62,11 @@ const ProfileView: FC = () => {
         init();
     }, [compensateSCC]);
 
-    const compensateItem = async (sccId: string) => {
+    const compensateItem = async (tokenId: number) => {
+        console.log('tokenId :', tokenId);
         try {
           compensateSCC({
-            sccId: sccId,
+            onChainId: tokenId,
           });
         } catch (error: any) {
           console.error(error);
@@ -143,7 +144,7 @@ const ProfileView: FC = () => {
                         </Box>
                         <Center pb={6}>
                             {   sccData.scc_retirement_status !== 'Compensate'
-                                ? <Button onClick={() => compensateItem(sccData.id_scc)} colorScheme='orange'>Compensate</Button> 
+                                ? <Button onClick={() => compensateItem(sccData.onChainId)} colorScheme='orange'>Compensate</Button> 
                                 : <></>
                             }
                         </Center>

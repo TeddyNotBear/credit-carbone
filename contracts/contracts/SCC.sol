@@ -98,21 +98,21 @@ contract SCC is
 
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;
-        _remove(tokenId);
+        _orderedArray(tokenId - 1);
     }
 
     // Allow everyone to buy a SCC
     function buy(address owner, uint256 tokenId) external {
         require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
 
-        safeTransferFrom(admin, owner, tokenId, 1, '');
+        _safeTransferFrom(admin, owner, tokenId, 1, '');
 
         tokensOwned[owner].push(tokenId);
         tokensOwnedCount[owner]++;
         // Reset price
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;
-        _remove(tokenId);
+        _orderedArray(tokenId - 1);
     }
 
     // Function to receive Ether. msg.data must be empty
@@ -121,9 +121,11 @@ contract SCC is
     // Fallback function is called when msg.data is not empty
     fallback() external payable {}
 
-    function _remove(uint256 index) internal {
-        onSaleTokenIds[index] = onSaleTokenIds[onSaleTokenIds.length - 1];
+    function _orderedArray(uint index) public{
+        for(uint i = index; i < onSaleTokenIds.length-1; i++){
+            onSaleTokenIds[i] = onSaleTokenIds[i+1];      
+        }
         onSaleTokenIds.pop();
-    } 
+    }
     
 }

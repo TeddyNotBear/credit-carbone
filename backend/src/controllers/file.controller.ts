@@ -97,7 +97,6 @@ export class FileController {
     }
 
     public async uploadToIPFS(jsonData: Array<any>) {
-        console.log('IPFS');
         const auth = 'Basic ' + Buffer.from(process.env["INFURA_PROJECT_ID"] + ':' + process.env["INFURA_SECRET_KEY"]).toString('base64');
         const ipfs = await create({
             host: 'ipfs.infura.io',

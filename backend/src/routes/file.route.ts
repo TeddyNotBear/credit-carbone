@@ -18,7 +18,6 @@ router.post('/upload', async (req: any, res: express.Response) => {
         const email = req.body.email;
         const jsonData = req.body.jsonData;
         const type = req.body.type;
-        console.log(email);
 
         const userInfo = await User.findOne({email: email}).exec();
         if (userInfo === null) {
@@ -47,10 +46,6 @@ router.post('/upload', async (req: any, res: express.Response) => {
 });
 
 router.post('/uploadToIPFS', async (req: any, res: express.Response) => {
-    console.log('IPFS');
-
-    console.log('IPFS email:', req.body.email)
-
     try {
         const email = req.body.email;
 
@@ -99,7 +94,6 @@ router.post('/verif', async (req, res: express.Response) => {
             const fileController = new FileController();
             const userUCOs = await fileController.getUserUCO(email);
             const isValid: boolean = await fileController.ownershipVerification(userUCOs, jsonData);
-            console.log(isValid);
             if(isValid) await fileController.updateUCORetirementStatus(jsonData);
 
             return res.status(200).send({ message: isValid });
@@ -138,12 +132,12 @@ router.put('/scc/removeFromSale', async (req, res: express.Response) => {
 
     const email = req.body.email;
 
-    const userInfo = await User.findOne({email: email}).exec();
+    /*const userInfo = await User.findOne({email: email}).exec();
     if (userInfo === null) {
         res.status(404).end();
         return;
     }
-    if(userInfo.role === 'Corporate') return res.status(401).end();
+    if(userInfo.role === 'Corporate') return res.status(401).end();*/
     
     try {
         const filter = { id_scc: sccId };
@@ -156,11 +150,12 @@ router.put('/scc/removeFromSale', async (req, res: express.Response) => {
 });
 
 router.put('/scc/compensate', async (req, res: express.Response) => {
-    const sccId = req.body.sccId;
-    if(!sccId) return res.status(500);
+    const onChainId = req.body.onChainId;
+    if(!onChainId) return res.status(500);
+    console.log(onChainId);
     
     try {
-        const filter = { id_scc: sccId };
+        const filter = { onChainId: onChainId };
         const update = { scc_retirement_status: 'Compensate' };
         await SCC.findOneAndUpdate(filter, update, { new: true });
         return res.status(200).send({ message: "Update successfully!"});

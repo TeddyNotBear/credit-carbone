@@ -43,7 +43,7 @@ export interface RemoveFromSaleSCCArgs {
 }
 
 export interface CompensateSCCArgs {
-    sccId: string;
+    onChainId: number;
     onSuccess?: (successCallbackData: any) => void;
     onError?: (error: Error) => void;
 }
@@ -249,11 +249,11 @@ export const useCompensateSCC = () => {
         Error,
         CompensateSCCArgs
     >({
-       mutationFn: async ({ sccId }: CompensateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
+       mutationFn: async ({ onChainId }: CompensateSCCArgs): Promise<{ message: string; mutationResult: any }> =>
         fetchApi({
             uri: `${URI}/scc/compensate`,
             method: methods.PUT,
-            body: { sccId }
+            body: { onChainId }
         }),
         onSuccess: (data, { onSuccess }) => {
             queryClient.invalidateQueries([URI]);

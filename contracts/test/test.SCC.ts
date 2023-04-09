@@ -112,8 +112,13 @@ describe("SCC contract", function () {
     const tokenId: number = 0;
     const fakeOwner: string = await addr1.getAddress();
 
-    await scc.connect(addr2).setApprovalForAll(admin, true);
-    await scc.connect(addr2).buy(fakeOwner, tokenId);
+    await scc.connect(addr2).buy(await addr2.getAddress(), tokenId);
+    const tokensOwned: BigNumber[] = await scc.connect(addr2).tokensOwned(await addr2.getAddress(), 0);
+    expect(tokensOwned).to.equal(0);
+    expect(await scc.connect(addr2).onSale(0)).to.equal(false);
+    expect(await scc.connect(addr2).tokenPrice(0)).to.equal(0);
+    const tokensOwnedCount: any = await scc.connect(addr2).tokensOwnedCount(await addr2.getAddress());
+    expect(tokensOwnedCount).to.equal(1);
   });
 
 });

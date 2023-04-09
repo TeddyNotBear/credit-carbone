@@ -64,7 +64,7 @@ const TopBar = () => {
             >
               {Links.map(link => 
               {
-                if(localStorage.getItem('role') == 'Corporate' && (link.name == 'Marketplace' || link.name == 'Profile') ) {
+                if((localStorage.getItem('role') == 'Corporate' || !localStorage.getItem('role') ) && (link.name == 'Marketplace' || link.name == 'Profile') ) {
                   return(
                     <NavLink key={link.name} name={link.name} path={link.path} />
                   )

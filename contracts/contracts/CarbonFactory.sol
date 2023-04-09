@@ -1,5 +1,5 @@
-import "./SCC1155.sol";
-import "./uco.sol";
+import "./SCC.sol";
+import "./UCO.sol";
 
 //import "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 // import './interface/IMyERC1155.sol';
@@ -13,9 +13,10 @@ contract CarbonFactory is
     Initializable,
     OwnableUpgradeable
 {
+    /*
     constructor(address _admin) initializer {
         admin = _admin;
-    }
+    }*/
 
     mapping(address => address[]) public SCCstorage;
     mapping(address => address[]) public UCOstorage;
@@ -24,11 +25,11 @@ contract CarbonFactory is
     address admin;
 
 
-    /*
+    
     function initialize(address _admin) public initializer {
         admin = _admin;
     }
-    */
+    
 
 
    

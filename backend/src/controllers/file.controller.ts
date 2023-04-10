@@ -27,11 +27,11 @@ export class FileController {
 
     public async createSCCInDB(data: ISCC, userEmail: string) {
         try {
-            Counter.findByIdAndUpdate(        // ** Method call begins **
-                { _id: "sccIdOnChain" },                  // The ID to find for in counters model
-                { $inc: { seq: 1 } },                // The update
-                { new: true, upsert: true },         // The options
-                async (error, counter) => {           // The callback
+            Counter.findByIdAndUpdate(
+                { _id: "sccIdOnChain" },
+                { $inc: { seq: 1 } },
+                { new: true, upsert: true },
+                async (error, counter) => {
                     let seqId: any;
                     if(counter == null) {
                         const newVal = new Counter({ _id: "sccIdOnChain", seq: 1 });
@@ -46,6 +46,9 @@ export class FileController {
                         onChainId: seqId,
                         uploadedBy: userEmail
                     });
+                    console.log('seqId : ' ,seqId);
+                    console.log('scc :', data.id_scc);
+
                     await scc.save();
                 }
             ); 

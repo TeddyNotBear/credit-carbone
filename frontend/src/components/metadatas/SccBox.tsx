@@ -83,12 +83,6 @@ export const SccBox: FC = () => {
                     >
                       linked to uco n°{sccData.scc_uco_id}
                     </Box>
-                  <Box
-                      color='gray.500'
-                      fontSize='xs'
-                      textTransform='uppercase'
-                    >
-                      On-Chain id : {sccData.onChainId}</Box>
                 </Box>
                 <Flex p='6'>
                   {

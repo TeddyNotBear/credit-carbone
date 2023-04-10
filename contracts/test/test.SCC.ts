@@ -100,6 +100,28 @@ describe("SCC contract", function () {
 
   });
 
+  it("Put on sale tokenId n°4", async () => {
+    const tokenId: number = 4;
+    const price: number = 54;
+    const fakeOwner: string = await addr1.getAddress();
+
+    await expect(scc.connect(addr1).putOnSale(
+      fakeOwner,
+      tokenId, 
+      price
+    )).to.emit(scc, "PutOnSale").withArgs(tokenId, price);
+
+    expect(await scc.connect(addr1).onSale(tokenId)).to.equal(true);
+    expect(await scc.connect(addr1).tokenPrice(tokenId)).to.equal(price);
+    expect(await scc.connect(addr1).sellers(tokenId)).to.equal(await addr1.getAddress());
+
+    const onSaleTokenIds: BigNumber[] = await scc.connect(addr1).getOnSaleTokenIds();
+    console.log('onSaleTokenIds (2)', onSaleTokenIds);
+
+    expect(onSaleTokenIds[2]).to.equal(BigNumber.from(4));
+
+  });
+
   it("Put on sale tokenId n°3", async () => {
     const tokenId: number = 3;
     const price: number = 25;
@@ -117,7 +139,7 @@ describe("SCC contract", function () {
 
     const onSaleTokenIds: BigNumber[] = await scc.connect(addr1).getOnSaleTokenIds();
     console.log('onSaleTokenIds (3)', onSaleTokenIds);
-    expect(onSaleTokenIds[2]).to.equal(BigNumber.from(3));
+    expect(onSaleTokenIds[3]).to.equal(BigNumber.from(3));
   });
 
   it("Remove from sale tokenId n°5", async () => {
@@ -128,20 +150,20 @@ describe("SCC contract", function () {
 
     const onSaleTokenIds: BigNumber[] = await scc.connect(addr1).getOnSaleTokenIds();
     console.log('onSaleTokenIds after remove', onSaleTokenIds);
-    expect(onSaleTokenIds.length).to.equal(2);
+    expect(onSaleTokenIds.length).to.equal(3);
     expect(await scc.connect(addr1).tokenPrice(tokenId)).to.equal(0);
   });
 
-  it("Buy tokenId n°0", async () => {
+  it("Buy tokenId n°4", async () => {
     const admin: string = await owner.getAddress();
-    const tokenId: number = 0;
+    const tokenId: number = 4;
     const fakeOwner: string = await addr1.getAddress();
 
     await scc.connect(addr2).buy(await addr2.getAddress(), tokenId);
     const tokensOwned: BigNumber[] = await scc.connect(addr2).tokensOwned(await addr2.getAddress(), 0);
-    expect(tokensOwned).to.equal(0);
-    expect(await scc.connect(addr2).onSale(0)).to.equal(false);
-    expect(await scc.connect(addr2).tokenPrice(0)).to.equal(0);
+    expect(tokensOwned).to.equal(4);
+    expect(await scc.connect(addr2).onSale(4)).to.equal(false);
+    expect(await scc.connect(addr2).tokenPrice(3)).to.equal(25);
     const tokensOwnedCount: any = await scc.connect(addr2).tokensOwnedCount(await addr2.getAddress());
     expect(tokensOwnedCount).to.equal(1);
     const onSaleTokenIds: BigNumber[] = await scc.connect(addr1).getOnSaleTokenIds();

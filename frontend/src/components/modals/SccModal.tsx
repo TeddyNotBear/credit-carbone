@@ -92,10 +92,6 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
                             trait_type: "scc_address",
                             value: json.scc_address
                         },
-                        /*{
-                            trait_type: "scc_retirement_status",
-                            value: json.scc_retirement_status
-                        },*/
                         {
                             trait_type: "scc_ghg_value",
                             value: json.scc_ghg_value

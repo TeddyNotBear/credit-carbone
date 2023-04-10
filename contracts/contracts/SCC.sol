@@ -25,7 +25,7 @@ contract SCC is
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => address) public sellers;
     mapping(address => mapping(uint256 => uint256)) public _pendingBalance;
-    mapping(uint256 => bool) public exists;
+    mapping(uint256 => bool) private exists;
     mapping(address => uint256[]) public tokensOwned;
     mapping(address => uint256) public tokensOwnedCount;
 

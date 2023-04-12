@@ -15,12 +15,22 @@ contract UCO is ERC721AUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
     Counters.Counter private cidTokenCounter;
 
     string private _baseTokenURI;
+    address private factoryAddress;
+    address private admin;
+
     mapping(uint256 => string) public cidOfTokenId;
 
-    function initialize(string memory _name, string memory _symbol) initializerERC721A initializer public {
+    modifier onlyAdmin() {
+        require(msg.sender == factoryAddress || msg.sender == admin, "Not the Owner of the Gallery");
+        _;
+    }
+
+    function initialize(string memory _name, string memory _symbol, address _admin) initializerERC721A initializer public {
         __ERC721A_init(_name, _symbol);
         __Ownable_init();
         __ReentrancyGuard_init();
+        factoryAddress = msg.sender;
+        admin = _admin;
     }
 
     // add address in params
@@ -37,7 +47,7 @@ contract UCO is ERC721AUpgradeable, OwnableUpgradeable, ReentrancyGuardUpgradeab
         return _baseTokenURI;
     }
 
-    function setBaseURI(string calldata baseURI) external onlyOwner {
+    function setBaseURI(string calldata baseURI) external onlyAdmin {
         _baseTokenURI = baseURI;
     }
 

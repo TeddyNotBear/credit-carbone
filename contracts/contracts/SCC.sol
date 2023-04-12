@@ -20,12 +20,13 @@ contract SCC is
     Counters.Counter private sccCounter;
 
     address private admin;
+    mapping(uint256 => bool) private exists;
+    mapping(string => uint256) private offChainToOnChainId;
 
     mapping(uint256 => bool) public onSale;
     mapping(uint256 => uint256) public tokenPrice;
     mapping(uint256 => address) public sellers;
-    mapping(address => mapping(uint256 => uint256)) public _pendingBalance;
-    mapping(uint256 => bool) private exists;
+    mapping(address => mapping(uint256 => uint256)) public pendingBalance;
     mapping(address => uint256[]) public tokensOwned;
     mapping(address => uint256) public tokensOwnedCount;
 
@@ -50,7 +51,8 @@ contract SCC is
         return onSaleTokenIds;
     }
 
-    function getTokenPrice(uint256 tokenId) public view returns (uint256) {
+    function getTokenPrice(string memory offChainId) public view returns (uint256) {
+        uint256 tokenId = getOffChainToOnChainId(offChainId);
         return tokenPrice[tokenId];
     }
 
@@ -58,22 +60,36 @@ contract SCC is
         return tokensOwnedCount[owner];
     }
 
-    function mint(address owner, uint256 quantity, string[] memory cidArr) external {
+    function getOffChainToOnChainId(string memory offChainId) public view returns (uint256) {
+        return offChainToOnChainId[offChainId];
+    }
+
+    function isOnSale(string memory offChainId) external view returns (bool) {
+        uint256 tokenId = getOffChainToOnChainId(offChainId);
+        return onSale[tokenId];
+    }
+
+    function mint(address owner, uint256 quantity, string[] memory cidArr, string[] memory offChainIds) external {
         for (uint256 i = 0; i < quantity; i++) {
             _mint(admin, sccCounter.current(), 1, '');
             exists[sccCounter.current()] = true;
-            _pendingBalance[owner][sccCounter.current()] = 1;
+            pendingBalance[owner][sccCounter.current()] = 1;
             _setURI(sccCounter.current(), cidArr[i]);
+            offChainToOnChainId[offChainIds[i]] = sccCounter.current();
             sccCounter.increment();
             tokensOwnedCount[owner]++;
+
+            // linkedUUIDtoId[UUID] = sccCounter.current();
         }
     }
 
     // Allow smart-contract's admin to put a SCC on sale
-    function putOnSale(address owner, uint256 tokenId, uint256 price) external {
+    function putOnSale(address owner, string memory offChainId, uint256 price) external {
+        uint256 tokenId = offChainToOnChainId[offChainId];
+        
         require(_exists(tokenId), "SCC does not exists.");
         require(balanceOf(admin, tokenId) == 1, "Admin must owns your SCC to sell it.");
-        require(_pendingBalance[owner][tokenId] == 1, "You must owns the SCC to sell it.");
+        require(pendingBalance[owner][tokenId] == 1, "You must owns the SCC to sell it.");
         require(price > 0, "Price must be greater than 0.");
 
         onSale[tokenId] = true;
@@ -84,10 +100,12 @@ contract SCC is
         emit PutOnSale(tokenId, price);
     }
 
-    function removeFromSale(address owner, uint256 tokenId) external {
+    function removeFromSale(address owner, string memory offChainId) external {
+        uint256 tokenId = offChainToOnChainId[offChainId];
+
         require(_exists(tokenId), "SCC does not exists.");
         require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
-        require(_pendingBalance[owner][tokenId] == 1, "You must owns the SCC to sell it.");
+        require(pendingBalance[owner][tokenId] == 1, "You must owns the SCC to sell it.");
 
         onSale[tokenId] = false;
         tokenPrice[tokenId] = 0;
@@ -97,8 +115,12 @@ contract SCC is
     }
 
     // Allow everyone to buy a SCC
-    function buy(address owner, uint256 tokenId) external {
+    function buy(address owner, string memory offChainId) external {
+        uint256 tokenId = offChainToOnChainId[offChainId];
+
         require(balanceOf(admin, tokenId) == 1, "Admin must owns the SCC to sell it.");
+        require(onSale[tokenId], "Token must be on sale to buy it");
+        
 
         _safeTransferFrom(admin, owner, tokenId, 1, '');
 

@@ -22,13 +22,14 @@ export const SccBox: FC = () => {
     setAmount(e.target.value);
   }
 
-  const sellItem = async (amount: string, tokenId: number, sccId: string) => {
-    console.log(tokenId);
+  const sellItem = async (amount: string, sccId: string) => {
+    console.log(sccId);
+    console.log(amount);
     try {
       const browserProvider = new ethers.BrowserProvider(provider);
       const signer = new ethers.Wallet(import.meta.env.VITE_PRIVATE_KEY!, browserProvider);
       const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-      const tx = await sccContract.putOnSale(address, tokenId - 1, ethers.parseEther(amount));
+      const tx = await sccContract.putOnSale(address, sccId, amount);
       setSellLoadingLoading(true);
       await tx.wait();
       setSellLoadingLoading(false);
@@ -96,7 +97,7 @@ export const SccBox: FC = () => {
                   {
                     !sellLoading
                     ? !sccData.onSale && sccData.scc_retirement_status !== 'Compensate'
-                      ? <Button onClick={() => sellItem(amount, sccData.onChainId, sccData.id_scc)} colorScheme='orange'>Sell</Button>
+                      ? <Button onClick={() => sellItem(amount, sccData.id_scc)} colorScheme='orange'>Sell</Button>
                       : <></>
                     : !sccData.onSale
                       ? <Button 

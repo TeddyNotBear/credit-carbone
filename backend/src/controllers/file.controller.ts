@@ -2,14 +2,19 @@ import { UCO, IUCO } from './../models/uco.model.js';
 import { SCC, ISCC } from './../models/scc.model.js';
 
 import { create } from 'ipfs-http-client';
-import { Counter } from '../models/counter.model.js';
 
 export class FileController {
 
     public async generateJsonFiles(jsonData: Array<any>, type: string, userEmail: string) {
-        jsonData.map((data: any) => {
-            if(type === 'UCO') this.createUCOInDB(data, userEmail);
-            if(type === 'SCC') this.createSCCInDB(data, userEmail);
+        jsonData.forEach(async (data: any) => {
+            if(type === 'UCO') {
+                const res = await this.createUCOInDB(data, userEmail);
+                return res;
+            } 
+            if(type === 'SCC') {
+                const res = await this.createSCCInDB(data, userEmail);
+                return res;
+            }
         })
     }
 
@@ -24,35 +29,14 @@ export class FileController {
             console.log(error);
         }
     }
-
+    
     public async createSCCInDB(data: ISCC, userEmail: string) {
-        try {
-            Counter.findByIdAndUpdate(
-                { _id: "sccIdOnChain" },
-                { $inc: { seq: 1 } },
-                { new: true, upsert: true },
-                async (error, counter) => {
-                    let seqId: any;
-                    if(counter == null) {
-                        const newVal = new Counter({ _id: "sccIdOnChain", seq: 1 });
-                        newVal.save();
-                        seqId = 1;
-                    } else {
-                        seqId = counter.seq;
-                    }
-
-                    const scc: ISCC = new SCC({
-                        ...data,
-                        onChainId: seqId,
-                        uploadedBy: userEmail
-                    });
-                    console.log('seqId : ' ,seqId);
-                    console.log('scc :', data.id_scc);
-
-                    await scc.save();
-                }
-            ); 
-
+        try {   
+            const scc: ISCC = new SCC({
+                ...data,
+                uploadedBy: userEmail
+            });
+            await scc.save();
         } catch (error) {
             console.log(error);
         }

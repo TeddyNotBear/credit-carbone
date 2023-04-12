@@ -19,6 +19,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
     const stopAnimation = () => controls.stop();
 
     const [jsonData, setJsonData] = useState<string[] | undefined>();
+    const [sccIds, setSccIds] = useState<string[]>([]);
     const [isSuccess, setSuccess] = useState<boolean>(false);
     const [callbackMessage, setCallbackMessage] = useState<string>();
     const [ipfsHashes, setIpfsHashes] = useState<[]>();
@@ -45,7 +46,8 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 } else if(type === 'SCC') {
                     console.log('SCC');
                     const sccContract = new Contract(SCC_PROXY_CONTRACT_ADDRESS, SCC_ABI, signer);
-                    tx = await sccContract.mint(address, ipfsHashes.length, ipfsHashes);
+                    console.log('sccIds :', sccIds);
+                    tx = await sccContract.mint(address, ipfsHashes.length, ipfsHashes, sccIds);
                 }
                 setMintLoading(true);
                 await tx.wait();
@@ -152,7 +154,6 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 const sheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[sheetName];
                 const json = XLSX.utils.sheet_to_json(worksheet);
-                console.log("test", json);
                 setJsonData(json);
             }
             reader.readAsArrayBuffer(event.target.files[0]);
@@ -264,6 +265,7 @@ export const UploadBox: FC<{ type: string }> = ({ type }) => {
                 setSuccess={setSuccess}
                 setCallbackMessage={setCallbackMessage}
                 setIpfsHashes={setIpfsHashes}
+                setSccIds={setSccIds}
             />
         </div>
     );

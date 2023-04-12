@@ -22,9 +22,10 @@ interface SccModalProps {
     setSuccess: any;
     setCallbackMessage: any;
     setIpfsHashes: any;
+    setSccIds: (array: string[]) => void;
 }
     
-export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSuccess, setCallbackMessage, setIpfsHashes }) => {
+export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSuccess, setCallbackMessage, setIpfsHashes, setSccIds }) => {
     const [ipfsLoading, setIpfsLoading] = useState<boolean>(false);
     const [isVerif, setIfVerif] = useState<boolean>();
     
@@ -78,6 +79,10 @@ export const SccModal: FC<SccModalProps> = ({ jsonData, isOpen, onClose, setSucc
     const handleUpload = useCallback(async (jsonData: any) => {
         if(jsonData) {
             let formatedJSON = new Array<any>;
+            const newIds = jsonData.map((data: any) => data.id_scc);
+            console.log(newIds)
+            { setSccIds(newIds); }
+
             jsonData.forEach((json: any) => {
                 let tmp = {
                     name: json.id_scc,

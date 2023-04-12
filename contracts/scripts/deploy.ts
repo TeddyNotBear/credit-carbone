@@ -15,7 +15,7 @@ async function deploy_uco() {
     console.log('Deploying UCO contract...');
     const uco = await upgrades.deployProxy(
         UCO,
-        ['UCO', 'UCO'],
+        ['UCO', 'UCO', '0xC5B4F2A7Ea7F675Fca6EF734d6F06FFB40dFC93F'],
         { initializer: 'initialize'}
     );
     await uco.deployed();
